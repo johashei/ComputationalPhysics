@@ -14,7 +14,9 @@ final,                   % draft: marks overfull hboxes, figures with paths
 
 \listfiles               %  print all files needed to compile this document
 
-\usepackage{relsize,makeidx,color,setspace,amsmath,amsfonts,amssymb,physics,mathtools}
+\usepackage{relsize,makeidx,color,setspace,amsmath,amsfonts,amssymb,
+physics,mathtools,algpseudocode}
+
 \usepackage[table]{xcolor}
 \usepackage{bm,ltablex,microtype}
 
@@ -56,14 +58,14 @@ final,                   % draft: marks overfull hboxes, figures with paths
 % Ensure copyright on titlepage (article style) and chapter pages (book style)
 \fancypagestyle{plain}{
   \fancyhf{}
-  \fancyfoot[C]{{\footnotesize \copyright\ 1999-2019, "Computational Physics I FYS3150/FYS4150":"http://www.uio.no/studier/emner/matnat/fys/FYS3150/index-eng.html". Released under CC Attribution-NonCommercial 4.0 license}}
+  \fancyfoot[C]{{\footnotesize \copyright\ 1999-2020, "Computational Physics I FYS3150/FYS4150":"http://www.uio.no/studier/emner/matnat/fys/FYS3150/index-eng.html". Released under CC Attribution-NonCommercial 4.0 license}}
 %  \renewcommand{\footrulewidth}{0mm}
   \renewcommand{\headrulewidth}{0mm}
 }
 % Ensure copyright on titlepages with \thispagestyle{empty}
 \fancypagestyle{empty}{
   \fancyhf{}
-  \fancyfoot[C]{{\footnotesize \copyright\ 1999-2019, "Computational Physics I FYS3150/FYS4150":"http://www.uio.no/studier/emner/matnat/fys/FYS3150/index-eng.html". Released under CC Attribution-NonCommercial 4.0 license}}
+  \fancyfoot[C]{{\footnotesize \copyright\ 1999-2020, "Computational Physics I FYS3150/FYS4150":"http://www.uio.no/studier/emner/matnat/fys/FYS3150/index-eng.html". Released under CC Attribution-NonCommercial 4.0 license}}
   \renewcommand{\footrulewidth}{0mm}
   \renewcommand{\headrulewidth}{0mm}
 }
@@ -113,19 +115,19 @@ Project 1, deadline  September 9
 % ----------------- author(s) -------------------------
 
 \begin{center}
-{\bf \href{{http://www.uio.no/studier/emner/matnat/fys/FYS3150/index-eng.html}}{Computational Physics I FYS4150}}
+{\bf \href{{http://www.uio.no/studier/emner/matnat/fys/FYS3150/index-eng.html}}{Computational Physics I FYS3150/FYS4150}}
 \end{center}
 
     \begin{center}
 % List of all institutions:
-\centerline{{\small Johannes Sørby Heines}}
+\centerline{{\small Department of Physics, University of Oslo, Norway}}
 \end{center}
     
 % ----------------- end author(s) -------------------------
 
 % --- begin date ---
 \begin{center}
-Aug 22, 2019
+Aug 25, 2020
 \end{center}
 % --- end date ---
 
@@ -143,7 +145,7 @@ there are several possible options. Two are listed here.
 \begin{itemize}
   \item For this exercise we recommend that you make your own functions for dynamic memory allocation of a  vector and a matrix. You don't need to write a class for this operations.  Use then the  library package lib.cpp with its header file  lib.hpp for obtaining LU-decomposed matrices, solve linear equations etc.
 
-  \item A very good and often recommended library for C++ handling of arrays is the library Armadillo, to be found at \url{arma.sourceforge.net}.  We will discuss the usage of this library during the lab sessions and lectures. Armadillo has also an interface to Lapack functions for solving systems of linear equations.
+  \item A very good and often recommended library for C++ handling of arrays is the library Armadillo, to be found at \url{arma.sourceforge.net}.  We will discuss the usage of this library during the lab sessions and lectures. Armadillo has also an interface to Lapack functions for solving systems of linear equations. Alternatively you can use the \href{{http://eigen.tuxfamily.org/index.php?title=Main_Page}}{Eigen} library, which has much of the same functionality as Armadillo.
 \end{itemize}
 
 \noindent
@@ -201,80 +203,51 @@ We have
 \shortintertext{or, on vector form,}
 \bmqty{-1&2&-1}\bmqty{v_{i-1}\\v_i\\v_{i+1}} &= h^2f_i
 \shortintertext{Expanding this expression to all $i$ gives}
-\bmqty{%\dmat[\cdots]{2 & -1 & 0\\-1 & 2 & -1\\0 & -1 & 2,\cdots,2 & -1 & 0\\-1 & 2 & -1\\0 & -1 & 2 }}
-	2 & -1 & 0 & \cdots & \cdots & \cdots & 0 \\ 
-	-1 & 2 & -1 & 0 $ \cdots &  \cdots & \cdots\\
-	0 & -1 & 2 & -1 $ 0 & \cdots & \cdots 
-	}
+\bmqty{	2 & -1 &  &  &  &  &  \\ 
+		-1 & 2 & -1 &  &  &  & \\
+		 & \ddots & \ddots & \ddots &  & 0 &  \\
+		 &  & -1 & 2 & -1 &  & \\
+		 & 0 & & \ddots & \ddots & \ddots & \\
+		 & & & & -1 & 2 & -1 \\
+		 & & & & & -1 & 2
+		}
+\bmqty{v_1 \\ \vdots \\ v_{i-1} \\ v_i \\ v_{i+1} \\ \vdots \\ v_{n}}
+&= h^2\bmqty{f_1 \\ \vdots \\ f_{i-1} \\ f_i \\ f_{i+1} \\ \vdots \\ f_{n}}
 \end{align*}
+Note that the terms 0 and $n+1$ are not included because of the boundary conditions $v_0 = v_{n+1} = 0$.
 
 \paragraph{Project 1 b):}
-We can rewrite our matrix $\mathbf{A}$ in terms of one-dimensional vectors $a,b,c$  
-of length $1:n$. 
-Our linear equation reads
-
+The first goal is to create an algorithm which can solve equations for any tridiagonal matrix. 
 \[
-    \mathbf{A} = \begin{bmatrix}
-                           b_1& c_1 & 0 &\dots   & \dots &\dots \\
-                           a_1 & b_2 & c_2 &\dots &\dots &\dots \\
-                           & a_2 & b_3 & c_3 & \dots & \dots \\
-                           & \dots   & \dots &\dots   &\dots & \dots \\
-                           &   &  &a_{n-2}  &b_{n-1}& c_{n-1} \\
-                           &    &  &   &a_{n-1} & b_n \\
-                      \end{bmatrix}\begin{bmatrix}
-                           v_1\\
-                           v_2\\
-                           \dots \\
-                          \dots  \\
-                          \dots \\
-                           v_n\\
-                      \end{bmatrix}
-  =\begin{bmatrix}
-                           \tilde{b}_1\\
-                           \tilde{b}_2\\
-                           \dots \\
-                           \dots \\
-                          \dots \\
-                           \tilde{b}_n\\
-                      \end{bmatrix}.
+\vb{A} = \bmqty{b_1 & c_1 & & & &\\
+				a_1 & b_2 & c_2 & & 0 & \\
+				& a_2 & b_3 & c_3 & & \\
+				& & \ddots & \ddots & \ddots & \\
+				& 0 & & a_{n-1} & b_{n-1} & c_{n-1} \\
+				& & & & a_{n-1} & b_n}.
 \]
+We use forward substitution to eliminate the $a$-diagonal, then backward substitution to eliminate the $c$-diagonal. The algorithm to implement is then \cite{mat}
+\\ 
+\begin{algorithmic}
+\State Forward substitution: 
+\For{$i$ from 1 to $n-1$}
+	\State $\tilde{b}_i = b_i - \frac{c_{i-1} a_{i-1}}{\tilde{b}_{i-1}}$
+	\State $\tilde{g}_i = g_i - \frac{\tilde{g}_{i-1}a_{i-1}}{\tilde{b}_{i-1}}$
+\EndFor
+\State Backward substitution:
+\For{$i$ from $n$ to 1}
+	\State $u_i = \frac{\tilde{g}_i - c_iu_{i+1}}{\tilde{b}_i}$
+\EndFor
+\end{algorithmic}
 
-
-
-
-Note well that we do not include the endpoints since the boundary
-conditions are used resulting in a fixed value for $v_i$.  A
-tridiagonal matrix is a special form of banded matrix where all the
-elements are zero except for those on and immediately above and below
-the leading diagonal.  Develop a general algorithm first which does
-not assume that we have a matrix with the same elements along the
-diagonal and the non-diagonal elements.  The algorithm for solving
-this set of equations is rather simple and requires two steps only, a
-decomposition and forward substitution and finally a backward
-substitution.
-
-Before we proceed with the solution of the differential equation, you should now plan the organization of your data flow. Here you will find it convenient to define vectors that will contain the matrix elements, the solution to the problem and the function $f(x)$ when discretized. You should also plan on to read input data, whether you do this from the command line or from a selected file. We recommend strongly that you use dynamical memory allocation.
-An example of a C++ program which reads from the command line various input parameters can \href{{https://github.com/CompPhysics/ComputationalPhysicsMSU/blob/master/doc/Projects/2018/Project1/CodeExamples/TridiagonalSimple.cpp}}{be found here}
-
-Your first task is to set up the general algorithm (assuming different
-values for the matrix elements) for solving this set of linear
-equations.  Find also the precise number of floating point operations
-needed to solve the above equations. For the general algorithm you
-need to specify the values of the array elements $a$, $b$ and $c$ by
-inserting their explicit values.
-
-
-Then you should code the above algorithm and solve the problem for matrices of the size
-$10\times 10$, $100\times 100$ and $1000\times 1000$.  That means that you select $n=10$, $n=100$ and
-$n=1000$ grid points. 
-
-Compare your results (make plots) with the closed-form solution for the different number of grid points  in the 
-interval $x\in(0,1)$.  The different number of grid points corresponds to different step lengths $h$.
-
+When programming this, all indices start at 0, so 
 
 \paragraph{Project 1 c):}
-Use thereafter the fact that the matrix has identical matrix elements along the diagonal and identical (but different) values for the non-diagonal elements. Specialize your algorithm to the special case and find the number of floating point operations
-for this specific tri-diagonal matrix. Compare the CPU time with the general algorithm from the previous point for matrices up to  $n=10^6$ grid points. 
+Next, we look at the special case where the matrix has identical matrixelements along the diagonal and identical (but different) values for the nondiagonalelements. In other words
+\[
+a_i = a\qcomma b_i = b\qcomma c_i = c \qq{for all $i$.}
+\]
+In this case, $\tilde{b}_i$  
 
 \paragraph{Project 1 d):}
 Compute the relative error  in the data set $i=1,\dots, n$,by setting up
@@ -339,7 +312,7 @@ PROGRAM time
 END PROGRAM time
 \end{verbatim}
 
-
+Your results may depend on the granularity of the clock.
 
 
 
@@ -375,15 +348,15 @@ project.
 The preferred format for the report is a PDF file. You can also use DOC or postscript formats or as an ipython notebook file.  As programming language we prefer that you choose between C/C++, Fortran2008 or Python. The following prescription should be followed when preparing the report:
 
 \begin{itemize}
-  \item Use Devilry to hand in your projects, log in  at  \href{{http://devilry.ifi.uio.no}}{\nolinkurl{http://devilry.ifi.uio.no}} with your normal UiO username and password and choose either 'fys3150' or 'fys4150'. There you can load up the files within the deadline.
+  \item Use \textbf{Canvas} to hand in your projects, log in  at  \href{{https://www.uio.no/english/services/it/education/canvas/}}{\nolinkurl{https://www.uio.no/english/services/it/education/canvas/}} with your normal UiO username and password.
 
-  \item Upload \textbf{only} the report file!  For the source code file(s) you have developed please provide us with your link to your github domain.  The report file should include all of your discussions and a list of the codes you have developed.  Do not include library files which are available at the course homepage, unless you have made specific changes to them.
+  \item Upload \textbf{only} the report file!  For the source code file(s) you have developed please provide us with your link to your github domain.  The report file should include all of your discussions and a list of the codes you have developed.  Do not include library files which are available at the course homepage, unless you have made specific changes to them. Alternatively, you can just upload the address to your GitHub or GitLab repository.
 
   \item In your git repository, please include a folder which contains selected results. These can be in the form of output from your code for a selected set of runs and input parameters.
 
   \item In this and all later projects, you should include tests (for example unit tests) of your code(s).
 
-  \item Comments  from us on your projects, approval or not, corrections to be made  etc can be found under your Devilry domain and are only visible to you and the teachers of the course.
+  \item Comments  from us on your projects, approval or not, corrections to be made  etc can be found under your \textbf{Canvas} domain and are only visible to you and the teachers of the course.
 \end{itemize}
 
 \noindent
