@@ -31,6 +31,7 @@ int main(int argc, char *argv[]){
   n = atoi(argv[2]);
   double h = 1.0/(n+1); // stepsize x_0 = 0 and x_n+1 = 1
 
+
   // Run and time algorithm:
   double* u;
   if(strcmp(argv[3], "general") == 0){
@@ -52,6 +53,7 @@ int main(int argc, char *argv[]){
   finish = clock(); // stop timer
   //cout << finish << " "<< start << " " << CLOCKS_PER_SEC << endl;
   double Time = (double(finish - start)/CLOCKS_PER_SEC);
+
 
   // Analytic solution
   cout << "Calculating analytic solution ..." << flush;

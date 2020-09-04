@@ -5,12 +5,12 @@ import sys, os
 
 try:
     sys.argv[3] == "-d"
-    os.system("make reset") # delete datafiles from previous runs
+    os.system("rm ./P1data/*") # delete datafiles from previous runs
 except:
     pass
 
 # Compile c++ code:
-os.system("c++ -o Project1b Project1b.cpp")
+os.system("c++ -o Project1 project1.cpp")
 
 # make a directory to store data:
 path = "P1data"
@@ -49,11 +49,11 @@ for i in range(len(exponents)):
     if not os.path.isfile("./"+path+"/"+filename):
         print("Data not found, calculating ...")
         # Run the compiled C++ code to get the datafile
-        cmdline = "./Project1b "+filename+" "+str(n)+" "+algorithm
+        cmdline = "./Project1 "+filename+" "+str(n)+" "+algorithm
         cmd = cmdline
         failure = os.system(cmd)
         if failure:
-            print('running project1 failed'); sys.exit(1)
+            print('running Project1 failed'); sys.exit(1)
 
         os.system("mv "+filename+" ./"+path+"/") # place datafile in directory
 
