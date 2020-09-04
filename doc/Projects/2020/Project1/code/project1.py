@@ -3,6 +3,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 import sys, os
 
+os.system("make reset") # delete datafiles from previous runs
+
 # Compile c++ code:
 os.system("c++ -o Project1b Project1b.cpp")
 
@@ -11,22 +13,25 @@ path = "P1data"
 if not os.path.isdir("./"+path):
     os.mkdir(path)
 
+# Parameters
+exponents = np.linspace(1,5,5) # exponents define size of matrix
+algorithm = 'specific'
 
-exponents = np.linspace(1,7,7) # exponents define size of matrix
-maxerror = np.zeros(len(exponents))
-log10h = np.zeros(len(exponents))
+maxerror = np.zeros(len(exponents)) # store maximum relative error
+log10h = np.zeros(len(exponents)) # store log10(h)
+Times = np.zeros(len(exponents)) # store timer values in s
 
 for i in range(len(exponents)):
     exponent = exponents[i]
     n = int(10**exponent) # solution will be size n+2
     print("n=10^%d"%exponent)
 
-    filename = "algo_output_1e%d"%int(exponent)
+    filename = "%s_algo_output_1e%d"%(algorithm[0],int(exponent))
 
     if not os.path.isfile("./"+path+"/"+filename):
         print("Data not found, calculating ...")
         # Run the compiled C++ code to get the datafile
-        cmdline = "./Project1b " + filename + " " + str(n)
+        cmdline = "./Project1b "+filename+" "+str(n)+" "+algorithm
         cmd = cmdline
         failure = os.system(cmd)
         if failure:
@@ -56,7 +61,9 @@ for i in range(len(exponents)):
     values = errorline.split()
     maxerror[i] = float(values[0])
     log10h[i] = float(values[1])
-
+    # Read timer
+    infile.readline() # skip explanation line
+    Times[i] = float(infile.readline())
     infile.close()
 
     print("Adding data to plot")
@@ -69,5 +76,6 @@ plt.legend(loc=1)
 
 print("\nlog10(h) : ",log10h)
 print("maxerror : ",maxerror)
+print("time [s] :",Times)
 
 plt.show()
