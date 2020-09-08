@@ -4,6 +4,7 @@
 #include <iomanip>
 #include <string>
 #include "time.h"
+#include "lib.h"
 
 using namespace std;
 
@@ -16,6 +17,7 @@ double v(double); //  analytical solution function
 double error(int,double*,double*); // maximum error
 double* general_algo(int,double); // general tridiagonal solver
 double* specific_algo(int,double); // 2nd order DE solver
+double* LU_algo(int,double); // LU decomp and solver from lib.h
 
 
 int main(int argc, char *argv[]){
@@ -45,14 +47,20 @@ int main(int argc, char *argv[]){
     start = clock(); // start timer
     u = specific_algo(n,h);
     cout << " Done." << endl;
-}
+  }
+  else if(strcmp(argv[3], "LU") == 0){
+    cout << "Solving with LU decomposition algo ..." << flush;
+    start = clock(); // start timer
+    u = LU_algo(n,h);
+    cout << " Done." << endl;
+  }
   else{
-    cout << "Bad usage. <algorithm> should be 'general' or 'specific'." << endl;
+    cout << "Bad usage. <algorithm> should be 'general', 'specific' or 'LU'." << endl;
     exit(1);
   }
   finish = clock(); // stop timer
   //cout << finish << " "<< start << " " << CLOCKS_PER_SEC << endl;
-  double Time = (double(finish - start)/CLOCKS_PER_SEC);
+  double Time = (double(finish - start)/CLOCKS_PER_SEC)*1e3; // time in ms
 
 
   // Analytic solution
@@ -82,7 +90,7 @@ int main(int argc, char *argv[]){
   ofile << "Max relative error and log10(h):\n";
   ofile << setw(15) << setprecision(8) << maxerror << " ";
   ofile << setw(15) << setprecision(8) << log10(h) << "\n";
-  ofile << "Time taken by the algorithm [s]:\n";
+  ofile << "Time taken by the algorithm [ms]:\n";
   ofile << Time << "\n";
   ofile.close();
   cout << " Done." << endl;
@@ -101,35 +109,26 @@ double* general_algo(int n, double h){
   double *c = new double [n-1];
   double *g = new double [n];
   double *u = new double [n+2];
-  //double *btilde = new double [n];
-  //double *gtilde = new double [n];
-
   // Initializing:
+  for(int i=0 ; i<n+1; i++){
+    g[i] = h*h*f(i*h);
+  }
   for (int i = 0; i<n-1; i++){
     a[i] = -1;
     b[i] = 2;
     c[i] = -1;
   }
   b[n-1] = 2;
-
-  for(int i=0 ; i<n+1; i++){
-    g[i] = h*h*f(i*h);
-  }
   // Solution, assuming boundary u(0) = u(1) = 0
   u[0] = 0;
   u[n+1] = 0;
-
-  //btilde[0] = b[0];
-  //gtilde[0] = g[0];
-
-  // Forward substitution -- 5N FLOPs
+  // Forward substitution -- 5n FLOPs; 8 fetches; 3 writes
   for(int i=1 ; i<n ; i++){
     double row_reduction_factor = a[i-1]/b[i-1]; // used twice so saves one FLOP
     b[i] = b[i] - c[i-1]* row_reduction_factor;
     g[i] = g[i] - g[i-1]* row_reduction_factor;
-    //cout << b[i] << " ";
   }
-  //Backward substitution -- 3N FLOPs
+  //Backward substitution -- 3n FLOPs; 4 fetches; 1 writes
   for(int i=n+1 ; i>1 ; i--){
     u[i-1] = (g[i-2] - c[i-2]*u[i])/b[i-2]; // -2 because they start at 0 not 1
   }
@@ -138,14 +137,11 @@ double* general_algo(int n, double h){
 }
 
 double* specific_algo(int n, double h){
-  // Something wrong somewhere see file for n=10 ?
   // Special case where a_i = c_i = -1 and b_i = 2 for all i
   // Creating arrays:
   double *g = new double [n];
   double *u = new double [n+2];
   double *edlitb = new double [n]; // 1/btilde, because * is faster than /
-  //double *gtilde = new double [n];
-
   // Initializing
   for(int i=0 ; i<n+1; i++){
     g[i] = h*h*f(i*h);
@@ -153,24 +149,66 @@ double* specific_algo(int n, double h){
   // Solution, assuming boundary u(0) = u(1) = 0
   u[0] = 0;
   u[n+1] = 0;
-
-  //gtilde[0] = g[0];
-
   // Precalculating 1/btilde
   edlitb[0] = 1.0/2;
   for(int i=1 ; i<n ; i++){
     edlitb[i] = double(i+1)/(i+2);
-    //cout << 1/edlitb[i] << " ";
   }
-  // Forward substitution -- 2N FLOPs
+  // Forward substitution -- 2n FLOPs; 3n fetches; 1n write
   for(int i=1 ; i<n ; i++){
     g[i] = g[i] + g[i-1]*edlitb[i-1];
   }
-  // Backward substitution -- 2N FLOPs
+  // Backward substitution -- 2n FLOPs; 3n fetches; 1n write
   for(int i=n+1 ; i>1 ; i--){
     u[i-1] = (g[i-2] + u[i])*edlitb[i-2];
   }
   delete [] g; delete [] edlitb;
+  return u;
+}
+
+double* LU_algo(int n, double h){
+  // Creating arrays:
+  double **A;
+  double *g = new double[n];
+  double *u = new double[n+2];
+  // Allocate space for lib function args
+  int *indx = new int[n];
+  double d;
+  // Initialise matrix A :
+  A = new double*[n];
+  for(int i=0; i<n; i++){
+    A[i] = new double[n];
+    for(int j=0; j<n; j++){
+      A[i][j] = 0.0;
+    }
+  }
+  // Fill in tridiagonal elements :
+  for(int i=0; i<n-1; i++){
+    A[i][i] = 2;
+    A[i][i+1] = -1;
+    A[i+1][i] = -1;
+  }
+  A[n-1][n-1] = 2;
+  // Initialise right hand side g:
+  for(int i=0 ; i<n; i++){
+    g[i] = h*h*f(i*h);
+  }
+  // Call functions from lib
+  ludcmp(A,n,indx,&d); // LU decomposition
+  lubksb(A,n,indx,g); // Solves Au = g, stores u in g
+  // Put solution in array u
+  u[0] = 0;
+  u[n+2] = 0;
+  for(int i=0; i<n; i++){
+    u[i+1] = g[i];
+  }
+  // Delete matrix A
+  for(int i=0; i<n; i++){
+    delete [] A[i] ;
+  }
+  delete [] A;
+  delete [] g;
+
   return u;
 }
 
