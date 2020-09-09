@@ -1,0 +1,24 @@
+The numerical calculations are done by project1.cpp. The code is compiled and
+run by project1.py or project1_timing.py.
+
+In order to get solutions, call
+
+Terminal> python project1.py <algorithm> <exponents>
+
+<algorithm> ("general", "specific" or "LU") refers to the method for solving the
+            1D Poisson equation.
+<exponents> is a list or numpy.array of integers. The solution will have size
+            (10^x + 2) for each element x in <exponents>
+This creates datafiles containing the solution, the maximum relative error and
+the runtime for each exponent. It also creates a plot of the solutions and their
+maximum relative error, the plot is saved as an .eps file. Arrays of the step
+length h, maximum error and runtime are printed to Terminal.
+
+
+To time the solvers, call
+
+Terminal> python project1_timing.py <algorithm> <exponents> <sample size>
+
+<sample size> is the number of times the program will be run for each exponent.
+This prints to Terminal a table of the mean time with standard error for each
+exponent. 
