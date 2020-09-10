@@ -14,7 +14,7 @@ the runtime for each exponent. It also creates a plot of the solutions and their
 maximum relative error, the plot is saved as an .eps file. The files are saved
 to ./P1data. Arrays of the step length h, maximum error and runtime are printed
 to Terminal.
-Adding -d to the call will delete all files in the ./P1data directory
+Adding -d to the call will delete all files in the ./P1data directory.
 
 
 To time the solvers, call
