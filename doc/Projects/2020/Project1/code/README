@@ -24,3 +24,11 @@ Terminal> python project1_timing.py <algorithm> <exponents> <sample size>
 <sample size> is the number of times the program will be run for each exponent.
 This prints to Terminal a table of the mean time with standard error for each
 exponent.
+
+The benchmarks in P1data were obtained by running
+
+Terminal> python project1.py general "[3]"
+Terminal> python project1.py specific "[3]"
+Terminal> python project1.py LU "[3]"
+
+Note that the recorded algorithm runtimes will vary between runs.
