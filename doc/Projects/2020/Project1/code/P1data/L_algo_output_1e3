@@ -1005,4 +1005,4 @@ Solution to differential equation with LU algorithm:
 Max relative error and log10(h):
      -1.9986265      -3.0004341
 Time taken by the algorithm [ms]:
-2041.08
+1726.551
