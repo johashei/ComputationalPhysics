@@ -1,0 +1,149 @@
+% Dokument:
+\documentclass[a4paper,10pt,twocolumn]{article}
+\usepackage[utf8]{inputenc}
+%\usepackage[norsk]{babel}
+\usepackage{hyperref}
+
+% Formatering:
+\usepackage{geometry,amsthm,blindtext}
+\setlength{\parindent}{3mm}
+\setlength{\parskip}{1.8mm}
+% Symboler
+\usepackage[geometry]{ifsym}
+% Matematikk:
+\usepackage{amsmath,mathtools,amsfonts,xparse,physics,esint,mathrsfs,nicefrac,siunitx}
+% Kode:
+\usepackage{verbatim,listings}
+% Tekst:
+\usepackage{textcomp,varioref,enumerate}
+% Figurer:
+\usepackage{graphicx,subcaption,float,dcolumn,multirow}
+\usepackage[section]{placeins}
+% Farge:
+\usepackage{xcolor}
+
+% Dcolumn-kolonner
+\newcolumntype{,}{D{,}{{,}}{2}}
+\newcolumntype{=}{D{=}{=}{-1}}
+\newcolumntype{.}{D{.}{{.}}{2}}
+\newcolumntype{C}{>{$}c<{$}}
+
+% Listings-Instillinger
+	\lstset{
+	% Språk
+	language=c++,
+	% Farge
+	backgroundcolor=	\color[rgb]{0.9,0.9,0.9},
+	keywordstyle=		\color[rgb]{0,0,1},
+        	commentstyle=		\color[rgb]{0.133,0.545,0.133},
+        	stringstyle=		\color[rgb]{0.627,0.126,0.941},
+	numberstyle=\tiny	\color[rgb]{0.5,0.5,0.5},
+        	rulecolor=			\color{black},
+	% Tekst:
+	basicstyle=\scriptsize,
+	showspaces=false,
+	showstringspaces=false,
+	showtabs=false,
+	% Spesialtegn
+	extendedchars=true,
+        	literate=	{æ}{{\ae}}1 	{ø}{{\o}}1 		{å}{{\r a}}1 
+		  	{≤}{{$\leq$}}1 	{≥}{{$\geq}}1	{–}{{$-$}}1		{~}{{\tiny{$\sim$}}}1,
+        	% Format
+	frame=single,
+	aboveskip={1.5\baselineskip},
+	breaklines=true,
+	columns=fixed,
+	numbers=left,
+	numbersep=5pt,
+	stepnumber=1,
+	tabsize=4, 
+	% ... 
+        	upquote=true,
+        	prebreak = \raisebox{0ex}[0ex][0ex]{\ensuremath{\hookleftarrow}},
+        	identifierstyle=\ttfamily
+        	}
+	
+% Nummerering:
+%\renewcommand{\thesection}{\arabic{section}}		% Nummer i "section"
+%\renewcommand{\thessubection}\arabic{subsection}}	% Nummer i "subsection"
+%\renewcommand{\thesection}{\alph{section}}			% Bokstaver i ''section''
+%\renewcommand{\thesubsection}{\alph{subsection}}	% Bokstaver i ''subsection''
+
+% Egendefinerte kommandoer:
+	% Snarveier
+	\newcommand*{\eqset}[1]{\begin{dcases}#1\end{dcases}}
+	\newcommand*{\Qfig}[3]{\begin{figure}[ht]	\centering \includegraphics[#2]{#1} \caption{#3} \end{figure} }
+	% Tegn
+	\newcommand{\point}{\varointclockwise}	% integral med klokken
+	\newcommand{\noint}{\ointctrclockwise}	% integral mot klokken
+	\newcommand{\ee}[1]{\!\times\!\!10^{#1}} 	% 10 i #1-te
+	\newcommand{\un}[1]{\,\si{#1}}		% enheter
+	\newcommand{\e}[1]{\mathrm{e}^{#1}}	% exp()
+	\newcommand{\ci}{\dot{\iota\!\:}}		% kompleks i
+	% misc
+	\newcommand{\note}[1]{{\color{red}\quad[$\backslash!/$: #1]}}	% notater for dokument under arbeid
+	\newlength{\txtsz}\makeatletter\setlength{\txtsz}{\f@size pt}\makeatother
+	\newcommand{\insubsec}[1]{\par{\bf #1}}
+
+% Åpning:
+\title{Eigenvalue problems, from the equations of a buckling beamto Schroedinger’s equation for two electrons in a threedimensionalharmonic oscillator well}
+\author{Johannes Sørby Heines}
+
+
+% START
+\begin{document}
+
+\twocolumn[
+\begin{@twocolumnfalse}
+\maketitle
+\begin{abstract}
+
+\end{abstract}
+\end{@twocolumnfalse}
+]
+
+\section{Introduction}
+
+
+%
+%
+%
+\section{Theory}
+
+
+
+%
+%
+%
+\section{Methods}
+
+
+%
+%
+%
+\section{Results}
+
+
+%
+%
+%
+\section{Discussion}
+
+%
+%
+%
+\section{Conclusion}
+
+
+
+\onecolumn
+\begin{thebibliography}{9}
+
+
+\end{thebibliography}
+
+
+
+% Husk å avslutte alle environments
+% SLUTT
+\end{document}
