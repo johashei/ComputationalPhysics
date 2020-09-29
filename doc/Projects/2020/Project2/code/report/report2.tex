@@ -15,7 +15,7 @@
 % Kode:
 \usepackage{verbatim,listings}
 % Tekst:
-\usepackage{textcomp,varioref,enumerate}
+\usepackage{textcomp,varioref,enumerate,bbold}
 % Figurer:
 \usepackage{graphicx,subcaption,float,dcolumn,multirow}
 \usepackage[section]{placeins}
@@ -86,7 +86,8 @@
 	\newcommand{\insubsec}[1]{\par{\bf #1}}
 
 % Åpning:
-\title{Eigenvalue problems, from the equations of a buckling beamto Schroedinger’s equation for two electrons in a threedimensionalharmonic oscillator well}
+\title{Eigenvalue problems, comparison of Jacobi's and Lanczos' algorithms applied to Schroedinger’s equation for an electron in a threedimensional
+harmonic oscillator well}
 \author{Johannes Sørby Heines}
 
 
@@ -102,37 +103,131 @@
 \end{@twocolumnfalse}
 ]
 
-\section{Introduction}
+\section*{Introduction}
 
+In physics, we often encounter systems whose behaviour depends on their current state. In many cases these can be described or approximated by equations of the form  
+\[
+\dv[2]{u(x)}{x} = \lambda u(x).
+\]
+When such equations are discretized they give rise to an eigenvalue problem
+\[
+\vb{A}u = \lambda u.
+\]
+There are many different algorithms for solving eigenvalue problems numerically. We explored two methods for cases in which $A$ is a real symmetrical matrix: Jacobi's and Lanczos' algorithms.  
 
-%
-%
-%
-\section{Theory}
-
-
-
-%
-%
-%
-\section{Methods}
-
+We outline the mathematical workings of each algorithm, describe their numerical implementation in C++ and apply them to the simple case of a single electron in a harmonic oscillator potential. 
 
 %
 %
 %
-\section{Results}
+\section*{Theory}
+
+Numerical solutions to eigenvalue problems make use of similarity transformations:
+\[
+\vb{B} = \vb{S}^T\vb{A}\vb{S}, \qq{where} \vb{S}^T\vb{S} = \mathbb{1}.
+\]
+These are useful because they preserve the eigenvalues \cite{lecture} and the orthogonality of the eigenvectors.
+ \begin{proof}
+Consider an orthogonal basis of vectors 
+\[
+\vb{v}_i = \bmqty{v_{i1}\\\vdots\\v_{in}}\qcomma \vb{v}_j^T\vb{v}_i = \delta_{ij}.
+\]
+Let \(\vb{w}_i = \vb{S}^T\vb{v}_i\vb{S}\). Then
+\begin{align*}
+\vb{w}_j^T\vb{w}_i &= (\vb{S}^T\vb{v}_j\vb{S})^T(\vb{S}^T\vb{v}_i\vb{S}) 
+\\& = \vb{S}^T\vb{v}_j^T\vb{S}\vb{S}^T\vb{v}_i\vb{S}
+\\& = \vb{S}^T\vb{v}_j^T\vb{v}_i\vb{S}
+\\& = \vb{S}^T\delta_{ij}\vb{S} = \delta_{ij}.
+\end{align*}
+
+\end{proof}
+
+\subsection*{Jacobi's algorithm}
+Direct methods determine the eigenvalues of a matrix $\vb{A}$ by performing a series of similarity transformations 
+\[
+\vb{S}_N^T \cdots \vb{S}_1^T \vb{A} \vb{S}_1\cdots \vb{S}_N = \vb{D}, 
+\]
+such that $\vb{D}$ is a diagonal matrix. Because similarity transformations preserve the eigenvalues, the diagonal elements of $\vb{D}$ are the eigenvalues of $\vb{A}$. 
+There is no uniquely defined series of similarity transformations which lead to the matrix $\vb{B}$. 
+Jacobi's algorithm is one way of determining and performing these similarity transformations. 
+Each iteration finds the maximum off-diagonal element of $\vb{A}$, and performs a rotation along an axis to set that element to zero. This systematically reduces the Frobenius norm of the off-diagonal elements
+\[
+\mathrm{off}(A) = \sqrt{\sum_{i=1}^n\sum_{j=1,j\neq i}^n a_{ij}^2}.
+\]
+When this value close enough to zero, the algorithm ends giving approximate eigenvalues of $\vb{A}$.
+
+\subsection*{Lanczos' algorithm}
+
+\subsection*{Single electron in a harmonic oscillator potential}
+An electron in a harmonic oscillator potential can occupy energy levels given by the time independent radial Schrödinger equation \cite{labtext}
+\begin{align}\label{eq:schrodinger}
+-\frac{\hbar^2}{2m}&\qty(\frac{1}{r^2}\dv{r}r^2\dv{r}-\frac{l(l+1)}{r^2})R(r) 
+\\ &\qquad\qquad\qquad+ V(r)R(r) = ER(r). \nonumber
+\end{align} 
+Here $R(r)$ is the radial wave function, 
+$V(r)$ is the harmonic oscillator potential,
+the quantum number $l$ is the electron's orbital angular momentum,
+This is an eigenvalue problem where the eigenvalues $E$ represent the energy levels.
+\note{scaling in methods}
+
+%
+%
+%
+\section*{Methods}
+\subsection*{Jacobi's algorithm}
+The Jacobi algorithm is implemented in three steps. First the program loops through the off-diagonal elements to find the maximum absolute value $\abs{a_{kl}}$. Since the matrix is symmetric it only checks the lower elements. 
+Second, it calculates the rotation angle. \note{add calculation to theory} Here, equation \ref{eq:t} can lead to loss of numerical precision when $\tau^2 >> 1$, so it's implemented as
+\begin{align*}
+t &= \frac{(-\tau\pm\sqrt{1+\tau^2})(\pm\tau+\sqrt{1+\tau^2})}{\pm\tau+\sqrt{1+\tau^2}}
+\\&= \frac{\pm1}{\pm\tau + \sqrt{1+\tau^2}}.
+\end{align*}
+Third, the program performs the rotation. It temporarily stores the current values of $\vb{A}$ when needed, and overwrites the matrix with the new values.   
+
+\subsection*{Lanczo's algorithm}
 
 
-%
-%
-%
-\section{Discussion}
+\subsection*{Scaling of the Schrödinger equation}
+In order to apply the algorithms above to equation \ref{eq:schrodinger}, we introduce new variables to obtain a dimensionless equation. We only look at the case where $l=0$. 
+
+By making the substitution $R(r) = u(r)/r$, we get
+\[
+-\frac{\hbar^2}{2m}\dv[2]{r}u(r) + V(r)u(r) = Eu(r)
+\]
+We then define $\rho = t/\alpha$ where $\alpha$ is a constant with dimension length, giving $V(\rho) = k\alpha^2\rho^2/2$, and thus
+\[
+-\frac{\hbar^2}{2m\alpha^2}\dv[2]{\rho}u(\rho) + \frac{k}{2}\alpha^2\rho^2u(\rho) = Eu(\rho).
+\] 
+Now we can choose $\alpha$ so that $mk\alpha^4/\hbar^2 = 1$ and define $\lambda = 2m\alpha^2E/\hbar^2$, and rewrite the Schrödinger equation as
+\[
+-\dv[2]{\rho}u(\rho) + \rho^2u(\rho) = \lambda u(\rho).
+\]
+This equation can then be discretized, giving the eigenvalue equation $\vb{A}u = \lambda u$, where $\vb{A}$ is a tridiagonal matrix
+\[
+\vb{A} = 
+\bmqty{	d_1 & e_1 & &  \\
+		e_1	& d_2 & \ddots & \\
+		 & \ddots & \ddots & e_{N-2}\\
+		 & & e_{N-2} & d_{N-1}},	
+\] 
+with $e_i = -1/h^2$ and $d_i = 2/h^2+\rho_i^2$, where $h = (\rho_N-\rho_0)/N$ is the step length \cite{labtext}.
+
+
 
 %
 %
 %
-\section{Conclusion}
+\section*{Results}
+With $\rho_N = 30$ and $N=
+
+%
+%
+%
+\section*{Discussion}
+
+%
+%
+%
+\section*{Conclusion}
 
 
 

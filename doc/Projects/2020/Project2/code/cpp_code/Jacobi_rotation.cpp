@@ -1,7 +1,7 @@
 #include "EigenValueSolver.hpp"
 
 void Jacobi_rotation::init(dmat A, double tolerance, int maxiter){
-  cout << "init" << endl;
+  //cout << "init" << endl;
   initialize(A);
   m_tolerance = tolerance;
   m_maxiter = maxiter;
@@ -11,7 +11,7 @@ void Jacobi_rotation::solve(){
   m_iterations = 0;
   m_maxnondiag = 1; // must simply be higher than tolerance
 
-  while(m_maxnondiag > m_tolerance && m_iterations <= m_maxiter){
+  while(m_maxnondiag > m_tolerance && m_iterations < m_maxiter){
     max_offdiag();
   //  cout << m_maxnondiag <<endl;
     rotation_angle();
@@ -20,7 +20,15 @@ void Jacobi_rotation::solve(){
     m_iterations++;
   //  cout<<m_A<<endl;
   }
-  cout << m_iterations<<" iteratons"<<endl;
+  if(m_iterations==m_maxiter){
+    cout << "WARNING: iteration limit ("<<m_maxiter<<") reached." << endl;
+  }
+  cout << m_iterations<<" iteratons." << endl;
+}
+
+vec Jacobi_rotation::Get_eigvals(uword from, uword to){
+  vec m_eigvals = sort(m_A.diag());
+  return(m_eigvals.subvec(from,to));
 }
 
 void Jacobi_rotation::max_offdiag(){

@@ -27,10 +27,10 @@ TEST_CASE("Testing eigenvalues"){
   Jacobi_rotation eigval_tester;
   eigval_tester.init(A,1e-8,10);
   eigval_tester.solve();
-  A = eigval_tester.m_A;
-  REQUIRE(A(0,0)==Approx(54.627417));
-  REQUIRE(A(1,1)==Approx(9.372583));
-  REQUIRE(A(2,2)==Approx(32.000000));
+  vec eigvals = eigval_tester.Get_eigvals(0,2);
+  REQUIRE(eigvals(2)==Approx(54.627417));
+  REQUIRE(eigvals(0)==Approx(9.372583));
+  REQUIRE(eigvals(1)==Approx(32.000000));
 }
 
 TEST_CASE("Testing eigenvectors"){

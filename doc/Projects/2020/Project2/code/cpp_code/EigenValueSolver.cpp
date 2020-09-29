@@ -9,8 +9,10 @@ void EigenValueSolver::initialize(dmat A){
   m_R.eye(m_N-1,m_N-1);
 }
 
+
 void EigenValueSolver::write_to_file(string filename){
-  cout <<"write_to_file \nA\n"<<m_A<<"\nR\n"<<m_R<<endl;
+  // Todo: modify to work with Lanczos output 
+  cout <<"writing to file "<< filename << endl;// \nA\n"<<m_A<<"\nR\n"<<m_R<<endl;
   m_ofile.open(filename);
   m_ofile << "eigenvalues   &   eigenvectors \n";
   for(int i=0; i<m_N-1; i++){
