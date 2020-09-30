@@ -35,6 +35,12 @@ int main(int argc, char const* argv[]){
   dmat A = tridiagonal_Toeplitz_matrix_sym(N,a,d) + V;
   //cout << A << endl;
 
+  // Debugging for Lanczos: try with dense symmetric matrix
+  //mat sqrtA = randu<mat>(N-1,N-1) - 0.5;
+  //mat A = sqrtA * sqrtA.t();
+  //cout << A << endl;
+  // ********
+
   // Solve with Armadillo, Lapack:
   cx_vec eigval;
   cx_mat eigvec;
@@ -52,7 +58,7 @@ int main(int argc, char const* argv[]){
   if(algorithm == "Jacobi"){
     cout << "Jacobi's algorithm:" << endl;
     double tolerance = 1e-8;
-    int maxiter = 1e5;
+    int maxiter = 1e6;
     Jacobi_rotation jacobi_solver;
     jacobi_solver.init(A,tolerance,maxiter);
     start = clock();
@@ -67,7 +73,9 @@ int main(int argc, char const* argv[]){
 
   if(algorithm == "Lanczos"){
     cout << "Lanczos' algorithm:" << endl;
-    uword M = 100;
+    uword M;
+    cout << "input M : ";
+    cin >> M;
     Lanczos lanczos_solver;
     lanczos_solver.init(A,M);
     start = clock();

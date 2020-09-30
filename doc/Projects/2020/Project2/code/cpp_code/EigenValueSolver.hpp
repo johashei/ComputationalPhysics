@@ -49,7 +49,7 @@ private:
   vec m_alpha, m_beta;
   vec m_eigvals;
   void iterate();
-  void diagonalize();
+  void diagonalize(uword k);
 public:
   void init(dmat A, uword M);
   void solve();
