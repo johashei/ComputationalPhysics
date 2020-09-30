@@ -1,0 +1,264 @@
+Selected outputs for project2.py
+
+
+
+**********************************************
+FOR JACOBI'S ALGORITHM 
+**********************************************
+
+Terminal % python project2.py
+input rho_0 : 0
+input rho_N : 10
+input N : 500
+input algorithm : Jacobi
+Executing...
+
+ With Lapack:
+    2.9999
+    6.9994
+   10.9985
+   14.9972
+
+Time used: 0.919417 s
+
+Jacobi's algorithm:
+407112 iteratons.
+Eigenvalues:
+    2.9999
+    6.9994
+   10.9985
+   14.9972
+
+Time used: 515.434 s
+
+**********************************************
+
+Terminal % python project2.py
+input rho_0 : 0
+input rho_N : 20
+input N : 400
+input algorithm : Jacobi
+Executing...
+
+ With Lapack:
+    2.9992
+    6.9961
+   10.9905
+   14.9823
+
+Time used: 0.553509 s
+
+Jacobi's algorithm:
+244080 iteratons.
+Eigenvalues:
+    2.9992
+    6.9961
+   10.9905
+   14.9823
+
+Time used: 198.125 s
+
+**********************************************
+
+Terminal % python project2.py
+input rho_0 : 0
+input rho_N : 10
+input N : 300
+input algorithm : Jacobi
+Executing...
+
+ With Lapack:
+    2.9997
+    6.9983
+   10.9958
+   14.9921
+
+Time used: 0.254932 s
+
+Jacobi's algorithm:
+144732 iteratons.
+Eigenvalues:
+    2.9997
+    6.9983
+   10.9958
+   14.9921
+
+Time used: 66.2696 s
+
+**********************************************
+
+Terminal % python project2.py
+input rho_0 : 0
+input rho_N : 10
+input N : 100
+input algorithm : Jacobi
+Executing...
+
+ With Lapack:
+    2.9969
+    6.9843
+   10.9617
+   14.9290
+
+Time used: 0.006862 s
+
+Jacobi's algorithm:
+15290 iteratons.
+Eigenvalues:
+    2.9969
+    6.9843
+   10.9617
+   14.9290
+
+Time used: 0.814411 s
+
+**********************************************
+FOR LANCZOS' ALGORITHM
+**********************************************
+
+Terminal % python project2.py
+input rho_0 : 0
+input rho_N : 10
+input N : 200
+input algorithm : Lanczos
+input M : 100
+Executing...
+
+ With Lapack:
+    2.9992
+    6.9961
+   10.9905
+   14.9823
+
+Time used: 0.102658 s
+
+Lanczos' algorithm:
+iterating
+Diagonalizing
+Eigenvalues:
+    2.9992
+    6.9961
+   10.9906
+   14.9865
+
+Time used: 0.014825 s
+
+**********************************************
+
+Terminal % python project2.py            
+Compiling...
+c++ -o main.out -Wall EigenValueSolver.cpp Jacobi_rotation.cpp Lanczos.cpp main.cpp -larmadillo
+input rho_0 : 0
+input rho_N : 30
+input N : 500 
+input algorithm : Lanczos
+input M : 100
+Executing...
+
+ With Lapack:
+    2.9989
+    6.9944
+   10.9863
+   14.9745
+
+Time used: 0.819871 s
+
+Lanczos' algorithm:
+iterating
+Diagonalizing
+Eigenvalues:
+    2.9989
+    6.9944
+   10.9863
+   14.9745
+
+Time used: 0.029823 s
+
+**********************************************
+
+Terminal % python project2.py
+Compiling...
+input rho_0 : 0
+input rho_N : 30
+input N : 1000
+input algorithm : Lanczos
+input M : 200
+Executing...
+
+ With Lapack:
+    2.9997
+    6.9986
+   10.9966
+   14.9936
+
+Time used: 3.34472 s
+
+Lanczos' algorithm:
+iterating
+Diagonalizing
+Eigenvalues:
+    2.9997
+    6.9986
+   10.9966
+   14.9936
+
+Time used: 0.208129 s
+
+**********************************************
+
+Terminal % python project2.py
+input rho_0 : 0
+input rho_N : 30
+input N : 3000
+input algorithm : Lanczos
+input M : 600
+Executing...
+
+ With Lapack:
+    3.0000
+    6.9998
+   10.9996
+   14.9993
+
+Time used: 62.5238 s
+
+Lanczos' algorithm:
+iterating
+Diagonalizing
+Eigenvalues:
+    3.0000
+    6.9998
+   10.9996
+   14.9993
+
+Time used: 5.73699 s
+
+**********************************************
+
+% python project2.py
+Compiling...
+input rho_0 : 0
+input rho_N : 30
+input N : 5000            
+input algorithm : Lanczos
+input M : 1000
+Executing...
+
+ With Lapack:
+    3.0000
+    6.9999
+   10.9999
+   14.9997
+
+Time used: 290.692 s
+
+Lanczos' algorithm:
+iterating
+Diagonalizing
+Eigenvalues:
+    3.0000
+    6.9999
+   10.9999
+   14.9997
+
+Time used: 48.2992 s
