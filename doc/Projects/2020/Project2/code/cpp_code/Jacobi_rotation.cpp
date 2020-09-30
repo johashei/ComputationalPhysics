@@ -13,12 +13,9 @@ void Jacobi_rotation::solve(){
 
   while(m_maxnondiag > m_tolerance && m_iterations < m_maxiter){
     max_offdiag();
-  //  cout << m_maxnondiag <<endl;
     rotation_angle();
-  //  cout << m_s << m_c<<endl;
     rotate();
     m_iterations++;
-  //  cout<<m_A<<endl;
   }
   if(m_iterations==m_maxiter){
     cout << "WARNING: iteration limit ("<<m_maxiter<<") reached." << endl;

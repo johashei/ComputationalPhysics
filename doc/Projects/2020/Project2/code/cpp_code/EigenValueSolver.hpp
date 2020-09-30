@@ -35,7 +35,6 @@ public:
   void solve();
   vec Get_eigvals(uword from, uword to);
 
-
   // These are public to be used by tests. todo : find a better way
   void max_offdiag();
   int m_k, m_l;

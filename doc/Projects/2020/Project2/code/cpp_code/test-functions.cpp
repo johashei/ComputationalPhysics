@@ -1,6 +1,8 @@
 #include "catch.hpp"
 #include "EigenValueSolver.hpp"
 
+// Tests for Jacobi_rotation:
+
 TEST_CASE("Testing max max_offdiag"){
   int k,l;
   double maxnondiag;

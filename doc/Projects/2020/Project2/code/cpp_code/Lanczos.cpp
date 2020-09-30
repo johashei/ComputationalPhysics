@@ -3,7 +3,6 @@
 void Lanczos::init(dmat A, uword M){
   initialize(A);
   m_M = M;
-  //m_r = r_0;
 }
 
 void Lanczos::solve(){
@@ -21,21 +20,7 @@ void Lanczos::iterate(){
   vec Aq(m_N-1);
   uword k = 0;
 
-  //cout << m_A << endl;
-  //double t; vec w=r; vec v=m_A*w; m_alpha(1)=dot(w,v); v=v-m_alpha(1)*w; m_beta(1)=norm(v,2);k=1;
   while(k < m_M){
-    // Other possible implementation:
-    //for(uword i=0;i<m_N-1;i++){
-    //  t = w(i);
-    //  w(i) = v(i)/m_beta(k);
-    //  v(i) = -m_beta(k)*t;
-    //}
-    //v = v + m_A*w;
-    //k = k+1;
-    //m_alpha(k) = dot(w,v);
-    //v = v - m_alpha(k)*w;
-    //m_beta(k) = norm(v,2);
-
     q_old = q;
     q = r/m_beta(k);
     Aq = m_A * q;
@@ -43,7 +28,8 @@ void Lanczos::iterate(){
     m_alpha(k) = dot(q,Aq);
     r = Aq - m_alpha(k)*q - m_beta(k-1)*q_old;
     m_beta(k) = norm(r,2);
-    //if(k%10==0){
+
+    //if(k%10==0){ // Print eigenvalues inside loop
     //  diagonalize(k);
     //  cout << "k = " << k << endl;
     //  cout << m_eigvals.subvec(0,4) << endl;
