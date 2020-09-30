@@ -1,4 +1,17 @@
 The python script project2.py compiles and runs the code in the directory ./cpp_code/ 
-Values for the tolerance and maximum iterations of Jacobi's algorithm, as well as the number of eigenvalues to display are set directly in main.cpp. Other parameters are requested upon running project2.py.
+
+Values which are set directly in main.cpp:
+
+eigval_idx_max : maximum index for displayed eigenvalues, starting at 0.
+tolerance : tolerance used to determine breakpoint of Jacobi's algorithm.
+maxiter : maximum number of iterations for Jacobi's algorithm, regardless of weather tolerance has been reached.
+
+Values requested upon running project2.py:
+
+rho_0 : start point for the matrix A, should usually be 0.
+rho_N : end point for the matrix A, approximation of infinity.
+N : indicates dimention of A ( (N-1)x(N-1) )
+algorithm : algorithm to apply. Should be 'Jacobi' or 'Lanczos'. 
+M : for Lanczos' algorithm, the number of iterations.
 
 the directory ./benchmarks/ contains examples of the terminal input and output when running project2.py 
