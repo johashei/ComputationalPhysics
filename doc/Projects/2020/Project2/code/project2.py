@@ -3,9 +3,9 @@ import matplotlib.pyplot as plt
 import sys, os, subprocess, glob
 
 print("Compiling...")
-#subprocess.run(['make','main','-C','cpp_code'],check=True)
-#subprocess.run(['make','test','-C','cpp_code'],check=True)
-#subprocess.run(['mv']+glob.glob('cpp_code/*.out')+['./'],check=True)
+subprocess.run(['make','main','-C','cpp_code'],check=True)
+subprocess.run(['make','test','-C','cpp_code'],check=True)
+subprocess.run(['mv']+glob.glob('cpp_code/*.out')+['./'],check=True)
 
 
 rho_0 = float(input("input rho_0 : "))
@@ -18,7 +18,7 @@ if (algo == "Lanczos"):
 
 
 print("Executing...")
-#subprocess.run(['./test.out'],check=True) # check raises error if tests fail
+subprocess.run(['./test.out'],check=True) # check raises error if tests fail
 subprocess.run(['./main.out',str(rho_0),str(rho_N),str(N),algo,str(M)],check=True)
 
 
