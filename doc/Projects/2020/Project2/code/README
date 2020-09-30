@@ -1,0 +1,4 @@
+The python script project2.py compiles and runs the code in the directory ./cpp_code/ 
+Values for the tolerance and maximum iterations of Jacobi's algorithm, as well as the number of eigenvalues to display are set directly in main.cpp. Other parameters are requested upon running project2.py.
+
+the directory ./benchmarks/ contains examples of the terminal input and output when running project2.py 
