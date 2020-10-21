@@ -9,12 +9,40 @@ void PhysicsSimulator::add_object(PhysicsObject object){
   m_initial.push_back(object);
 }
 
+void PhysicsSimulator::add_objects(const char* posvelFilename, const char* massFilename){
+  /* Read mass and initial conditions from files, generate the corresponding
+  PhysicsObject and add them to m_initial. */
+  double x,y,z,vx,vy,vz,m;
+  FILE *fp_init = fopen(posvelFilename, "r");
+  FILE *fp_mass = fopen(massFilename, "r");
+
+  for(unsigned i=0;i<9;i++){
+    fscanf(fp_init, "%lf %lf %lf %lf %lf %lf",&x,&y,&z,&vx,&vy,&vz);
+    fscanf(fp_mass, "%lf", &m);
+    vec3 pos(x,y,z);
+    vec3 vel(vx,vy,vz);
+    PhysicsObject planet(pos,vel*365.25,m/2e30);
+    add_object(planet);
+  }
+  fclose(fp_init);
+  fclose(fp_mass);
+}
+
 void PhysicsSimulator::set_parameters(double simulation_time, unsigned int steps, bool gen_rel){
   m_simulation_time = simulation_time;
   m_N_steps = steps;
   m_gen_rel = gen_rel;
   m_h = m_simulation_time/(m_N_steps-1); // actually m_N_{data points}
   m_objects = new PhysicsObject[m_N_objects*m_N_steps];
+}
+
+PhysicsObject PhysicsSimulator::get_object(unsigned k, unsigned i){
+  return(m_objects[k*m_N_objects + i]);
+}
+
+void PhysicsSimulator::get_shape(unsigned int shape[2]){
+  shape[0] = m_N_steps;
+  shape[1] = m_N_objects;
 }
 
 void PhysicsSimulator::run(){

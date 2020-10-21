@@ -6,6 +6,7 @@
 #include <vector>
 #include <numeric>
 #include <string>
+#include <cstdio>
 #include "physics_object.hpp"
 
 using namespace std;
@@ -29,9 +30,13 @@ public: // For debugging
   void set_initial_conditions();
   //void scale();
 //public:
+  ~PhysicsSimulator(){delete [] m_objects;}
   PhysicsSimulator();
   void add_object(PhysicsObject object); // Add single point particle object
+  void add_objects(const char* posvelFilename, const char* massFilename);
   void set_parameters(double simulation_time, unsigned int steps, bool gen_rel);
+  PhysicsObject get_object(unsigned k,unsigned i); // Get a copy of single object i at a single time k*h
+  void get_shape(unsigned int shape[2]); // Get the number of objects and time points
   void run();
   void write_to_file(string filename);
 };

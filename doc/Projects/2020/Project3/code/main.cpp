@@ -1,4 +1,5 @@
 #include "physics_simulator.hpp"
+//#include "tests.hpp"
 
 using namespace std;
 
@@ -26,13 +27,18 @@ int main(){
   PhysicsObject Earth(r0Earth, v0Earth, mEarth);
   PhysicsObject Jupiter(r0Jupiter, v0Jupiter, mEarth);
 
-  SolarSystem.add_object(Earth);
+  //SolarSystem.add_object(Earth);
   SolarSystem.add_object(Sun);
-  SolarSystem.add_object(Jupiter);
-  SolarSystem.set_parameters(10,500,0);
+  //SolarSystem.add_object(Jupiter);
+  const char* pvfile = "posvel.dat";
+  const char* mfile = "masses.dat";
+  SolarSystem.add_objects(pvfile,mfile);
+  SolarSystem.set_parameters(500,100000,0);
   SolarSystem.set_initial_conditions();
   cout << "velocityVerlet" << endl;
   SolarSystem.velocityVerlet();
+  //Tests tester(SolarSystem);
+  //tester.test_energy_conservation(1e-7);
   SolarSystem.write_to_file("classdata.dat");
 
   return 0;
