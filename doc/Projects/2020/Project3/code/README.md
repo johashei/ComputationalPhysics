@@ -2,7 +2,7 @@ The python scrips <code>interface.py</code> compiles, links and runs the main pr
 
 <pre> 
 Terminal > python interface.py main
-Terminal > Input name of datafile : example.dat
+Input name of datafile : example.dat
 </pre>
 
 will compile and run the program `main.cpp`, with "example.dat" as an argument, then read the file `example.dat` and create a plot `example.eps` from the data.
