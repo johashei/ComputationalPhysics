@@ -1,3 +1,8 @@
+code {
+  display: block;
+  white-space: pre-wrap   
+}
+
 The python scrips <code>interface.py</code> compiles, links and runs the main program, reads the generated data file and plots the result. It requires all .o files apart from the main program to already exist. Running
 
 <code> 
