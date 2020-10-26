@@ -7,7 +7,21 @@ Terminal > Input name of datafile : example.dat
 
 will compile and run the program `main.cpp`, with "example.dat" as an argument, then read the file `example.dat` and create a plot `example.eps` from the data.
 
-The programs `SolarSystem`, `TwobodySystem` and `simple` can be used as `main`. Note that the file name is not taken as an argument by `simple`, so use `simple.dat` or change it in the code.
+The programs `SolarSystem`, `SmallSystem` and `simple` can be used as `main`. Note that the file name is not taken as an argument by `simple`, so use `simple.dat` or change it in the code.
 
+`SolarSystem`
+Simulates the Sun, the eight planets in the solar system and Pluto. The file `posvel.dat` contains the initial conditions relative to the sun in AU and AU/day. `masses.dat` contains the planetary masses in kg. 
+
+`SmallSystem`
+Can simulate systems with the Sun, Earth, Mercury and Jupiter. 
+
+`simple`
+Simulates a two-body system without object orientation. Both the Euler-Cromer and velocity Verlet are implemented, and each can easily be commented out to use the other. 
+
+Values to set in the codes: 
+N : number of time steps
+T : simulation time in years
+
+See `physics_simulator.hpp` for explanation of the class functions.
 
 The results were produced with Apple clang version 11.0.3 (clang-1103.0.32.59) in macOS 10.15.4
