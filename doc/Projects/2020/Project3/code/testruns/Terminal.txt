@@ -1,0 +1,37 @@
+Simulation of the solar system, T=250, N=1e7:
+
+Terminal > python interface.py SolarSystem
+Input name of datafile : sol250vv7.dat
+add sun
+add planets
+parameters
+run
+CoM = [0.00601639, -0.00632382, -8.73606e-05]; [0.0026398, 0.00182842, -7.86574e-05];
+Simulating with velocity Verlet.
+Simulation completed in 205.938 s.
+test
+constructor
+DE/E = -1.63447e-13/-0.00439179 = 3.72166e-11 Mo AU^2 yr^-2.
+Energy is conserved within specified tolerance :1e-07 Mo AU^2 yr^-2.
+DL/L = [7.36173e-17, 1.06631e-16, 2.09902e-15];/[0.000574378, 0.000181068, 0.0219386]; = [1.28169e-13, 5.88903e-13, 9.56766e-14]; Mo Au^2 yr^-1.
+Angular momentum is conserved within specified tolerance :1e-07 Mo Au^2 yr^-1.
+write to file
+destructor
+Reading data from file ... done
+
+
+
+Simulation of the Earth-Sun-Jupiter system, T=10, N=1e6:
+
+Terminal > python interface.py SmallSystem
+Input name of datafile : esj10vv6.dat
+Simulating with velocity Verlet.
+Simulation completed in 1.45896 s.
+constructor
+Energy is conserved within specified tolerance :1e-09 Mo AU^2 yr^-2.
+Angular momentum is conserved within specified tolerance :1e-09 Mo Au^2 yr^-1.
+write to file
+end of program
+destructor
+Reading data from file ... done
+
