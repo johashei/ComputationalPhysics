@@ -1,21 +1,35 @@
 #include"Ising.hpp"
 
+/*
+Constructor:
+  Arguments:  unsigned int L = side length of spin lattice, assumed square.
+              unsigned int seed = seed for the random number generator.
+  Initializes a 64 bit Mersenne twister engine and creates the spin matrix **S
+  with periodic boundary conditions.
+*/
 Ising_2d::Ising_2d(unsigned L,unsigned seed){
   m_L = L;
   rng.seed(seed);
-  S = new int*[m_L+2];
+  S = new int*[m_L+2];  // L+2 to store boundary
   for(int i=0;i<m_L+2;i++){
     S[i] = new int[L+2];
   }
 }
 
-
+/*
+Destructor.
+*/
 Ising_2d::~Ising_2d(){
   for(int i=0;i<m_L+2;i++){delete[] S[i];}
   delete[] S;
 }
 
-
+/*
+Public function Initialize:
+  Arguments:  double T = temperature of the spin lattice
+  Precalculates all possible w = exp(-DeltaE/T) values for a single spin flip,
+  initializes the spin matrix S and the values of E and M.
+*/
 void Ising_2d::Initialize(double T){
   cout << "Initialize for T = " << T << "\n\t" << flush;
   m_T = T;
@@ -38,7 +52,10 @@ void Ising_2d::Initialize(double T){
   cout << "\tE  = " << E << " M = " << M << endl;
 }
 
-
+/*
+Public function Metropolis:
+  Performs one iteration of the Metropolis algorithm, updating S,E and M.
+*/
 void Ising_2d::Metropolis(){
   int ix,iy;
   for(int i=0;i<m_L*m_L;i++){ // One Monte Carlo cycle
@@ -65,7 +82,11 @@ void Ising_2d::Metropolis(){
   }
 }
 
-
+/*
+Private function AlignSpins:
+  Sets all elements of the spin matrix S to +1.
+  Called by public function Initialize.
+*/
 void Ising_2d::AlignSpins(){
   cout << "AlignSpins" << endl;
   for(int i=0;i<m_L+2;i++){ // Fill S with +1
@@ -76,10 +97,16 @@ void Ising_2d::AlignSpins(){
   S[0][0] = S[0][m_L+1] = S[m_L+1][0] = S[m_L+1][m_L+1] = 0;
 }
 
-
+/*
+Private function RandomizeSpins:
+  Sets each element of the spin matrix S randomly to either +1 or -1, from a
+  uniform distribution. The boundaries are then set according to periodic
+  boundary conditions.
+  Called by public function Initialize.
+*/
 void Ising_2d::RandomizeSpins(){
   cout << "RandomizeSpins" << endl;
-  for(int i=0;i<m_L+2;i++){ // Fill S with random +/- 1 
+  for(int i=0;i<m_L+2;i++){ // Fill S with random +/- 1
     for(int j=0;j<m_L+2;j++){
       S[i][j] = (uniform(rng)>0.5)*2 - 1;
     }
