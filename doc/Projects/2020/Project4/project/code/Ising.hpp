@@ -12,9 +12,9 @@ using namespace std;
 class Ising_2d{
 private:
   double m_T,E,M;
-  unsigned m_L;
-  int **S;
-  double w[17];
+  int m_L; // Side length of spin lattice, assumed square
+  int **S; // Spin matrix
+  double w[17]; // Array of precalculated w = exp(-DeltaE/kT) values
   mt19937_64 rng;
   uniform_real_distribution<double> uniform = std::uniform_real_distribution<double>(0.0,1.0);
 
@@ -22,10 +22,11 @@ private:
   void AlignSpins();
   void RandomizeSpins();
 public:
-  Ising_2d(unsigned L, unsigned seed);
+  Ising_2d(int L, int seed);
+  Ising_2d(int L);
   ~Ising_2d();
-  void Initialize(double T);
-  void Metropolis(); // One Monte Carlo cycle
+  void Initialize(double T, string spins="default");
+  int Metropolis(); // One Monte Carlo cycle
   double Get_Energy(){return E;}
   double Get_Magnetization(){return M;}
 };
