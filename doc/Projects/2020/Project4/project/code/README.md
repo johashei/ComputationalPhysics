@@ -7,11 +7,17 @@ The code can be compiled and linked using ```make all```.
 ```int L```: side length of lattice
 
  ```int MCS``` : number of Monte Carlo cycles
+ 
 ```int equilibration``` : number of Monte Carlo cycles to discard when computing expectation values
+
 ```double T_start``` : first temperature
+
 ```double T_end``` : last temperature
+
 ```double T_step``` : temperature step
+
 ```string spin0``` : initial state of the lattice should be "aligned", "random", or "default". Default is aligned if T<1.5 and random otherwise
+
 ```string outfilename``` : name of file to generate 
 
 The first line of the generated file displays the input parameters
