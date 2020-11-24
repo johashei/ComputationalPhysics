@@ -40,3 +40,7 @@ The python class ```Ising_2x2``` calculates the analytical expectation values fo
 
 The calls used to generate the data in the report are listed in ```commands.txt```. The figures  were created using the programs ```mcplots.py```,```histograms.py```, ```mainplots.py``` and ```interface.py```. These were made specifically for the data in this report and may need to be modified to work with other datafiles. 
 
+---
+
+All programs were compiled and run using gcc version 10.2.0 (Homebrew GCC 10.2.0) on a 4-core Intel Core i7 MacBook Pro with macOS 10.15.4
+
