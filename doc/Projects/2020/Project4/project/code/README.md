@@ -7,7 +7,7 @@ The code can be compiled and linked using ```make all```.
 ```int L```: side length of lattice
 
  ```int MCS``` : number of Monte Carlo cycles
- 
+
 ```int equilibration``` : number of Monte Carlo cycles to discard when computing expectation values
 
 ```double T_start``` : first temperature
@@ -44,7 +44,9 @@ The python class ```Ising_2x2``` calculates the analytical expectation values fo
 
 ---
 
-The calls used to generate the data in the report are listed in ```commands.txt```. The figures  were created using the programs ```mcplots.py```,```histograms.py```, ```mainplots.py``` and ```interface.py```. These were made specifically for the data in this report and may need to be modified to work with other datafiles. 
+The calls used to generate the data in the report are listed in ```commands.txt```. This file also contains the terminal output of the runs, including the runtime for each call. 
+
+The figures  were created using the programs ```mcplots.py```,```histograms.py```, ```mainplots.py``` and ```interface.py```. These were made specifically for the data in this report and may need to be modified to work with other datafiles. 
 
 ---
 
