@@ -17,9 +17,9 @@ void SIRS::Solve_MC(double final_time, int filestep, string outfilename){
 
   outfile.open(outfilename);
   for(int cycle=0;cycle<MCs;cycle++){
-    SeasonalSIRS();
-    Vital_dynamics();
-    //Vaccination();
+    for(int i=0;i<m_functions.size();i++){
+      (this->*(m_functions[i]))();
+    }
     m_time += dt;
     outfile << m_time << "\t" << m_state[0] << "\t" << m_state[1] << "\t" << m_state[2] << "\n";
   }
@@ -45,9 +45,7 @@ void SIRS::Vital_dynamics(){
 }
 
 void SIRS::Vaccination(){
-  cout << "vacc" << endl;
-  bool StoR = uniform(rng) < rVacc(m_time)*dt;
-  cout << StoR << endl;
+  bool StoR = uniform(rng) < rVacc(m_time,m_VaccArgs)*dt;
   m_state[0] -= StoR;
   m_state[2] += StoR;
 }
