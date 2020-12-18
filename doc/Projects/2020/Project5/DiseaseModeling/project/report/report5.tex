@@ -97,7 +97,9 @@
 \begin{@twocolumnfalse}
 \maketitle
 \begin{abstract}
-We created an extendable code for performing Monte Carlo simulations of the SIRS model, and implemented modifications to model vital dynamics, seasonal variation in the transmission rate, and vaccination. The results were studied for different parameters in each case and compared to the deterministic solutions of an ODE solver.      
+We created an extendable code for performing Monte Carlo simulations of the SIRS model, and implemented modifications to model vital dynamics, seasonal variation in the transmission rate, and vaccination. The results were studied for different parameters in each case and compared to deterministic solutions of calculated with fourth order Runge-Kutta.   
+The two approaches agree in most circumstances, but fluctuations in the Monte Carlo model may eradicate the disease completely when the number of infected gets close to zero. while this number can be arbitrarily small for the differential equations. 
+Large disagreements between the two approaches are an effect of high dependence on the behaviour of individuals, and as such that a purely statistical model in no longer reliable.
 \end{abstract}
 \end{@twocolumnfalse}
 ]
@@ -121,7 +123,7 @@ We outline various improvements on the basic model and compare the two approache
 %
 \section{Theory}
 
-All code can be found at \url{https://github.com/johashei/ComputationalPhysics/tree/master/doc/Projects/2020/Project5/DiseaseModeling/project/code}.
+All our code can be found at \url{https://github.com/johashei/ComputationalPhysics/tree/master/doc/Projects/2020/Project5/DiseaseModeling/project/code}.
 
 
 \subsection{The SIRS model}
@@ -131,7 +133,7 @@ These transitions are given by three quantities, namely the rates of transmissio
 The parameter $\beta$ is defined as the average number of contacts per person per time, multiplied by the probability of infection in a contact between $S$ and $I$.
 The parameters $\gamma$ and $\lambda$ are given by the inverse of the average recovery and immunity loss times, respectively.
 
-The transitions are calculated assuming the tree groups mix homogeneously. That is, the proportions of $S$, $I$ and $R$ in a subset of the population will be the same as in the population as a whole.  
+The transitions are calculated assuming the three groups mix homogeneously. That is, the proportions of $S$, $I$ and $R$ in a subset of the population will be the same as in the population as a whole.  
 
 %The average number of individuals being infected $(S\to I)$ in a time interval $\Delta t$ is  $\beta SI/N$. $The transmission rate $\beta$ is the product of the probability of transmission in a contact between $S$ and $I$ with the average number of contacts per person per time. $SI/N$ is the  
 %The rate of infection is then given by $EPSI/N^2$, where $E$ is the average number of encounters per person per time, $SI/N^2$ is the fraction of contacts which are between a susceptible and an infected, and $P$ is the probability of infection in such an encounter. Usually, the two constants $E$ and $P$ are grouped together in a single parameter $\beta$. 
@@ -151,7 +153,7 @@ The SIRS model can then be described by the following coupled differential equat
 
 \subsection{Improvements to the SIRS model}
 
-One of the advantages of the SIRS model is that it can easily be modified to include more effects, by changing or adding new terms to the differential equations \ref{eq:diff}. 
+The SIRS model can easily be modified to include more effects, by changing or adding new terms to the differential equations \ref{eq:diff}. 
 In this report, we will treat vital dynamics, seasonal variations and vaccination.
 
 \textbf{Vital dynamics:}
@@ -163,9 +165,9 @@ In addition, the disease may increase the death rate for the infected population
 The corresponding differential equations are
 \begin{subequations}
 \begin{align}
-\dv{S}{t} &= \lambda R - \beta\frac{SI}{N} - \mu S + \nu N
-\\ \dv{I}{t} &= \beta\frac{SI}{N} - \gamma I - \mu I - \mu_I I
-\\ \dv{R}{t} &= \gamma I - \lambda R - \mu R
+\dv{S}{t} &= \lambda R - \beta\frac{SI}{N} - \mu S + \nu N,
+\\ \dv{I}{t} &= \beta\frac{SI}{N} - \gamma I - \mu I - \mu_I I,\label{eq:cI}
+\\ \dv{R}{t} &= \gamma I - \lambda R - \mu R,
 \end{align}
 \end{subequations}
 where $\nu$ is the birth rate, $\mu$ is the death rate not related to the disease, and $\mu_I$ is the rate of death caused by the disease. 
@@ -179,19 +181,19 @@ On the simplest level, this variation can be modeled by adding a harmonic oscill
 where $A$ in the maximum deviation from $\beta_0$ and $\omega$ is the angular frequency of the seasonal variation.
 
 
-\textbf{Vaccination:} Vaccination trains the immune system to respond to the infecting agent, creating a transition directly from $S$ to $R$.  As opposed to the previously discussed effects, the rate of vaccination typically depends little on the number of individuals in each compartment, and more on external factors like medical research and vaccination campaigns. 
+\textbf{Vaccination:} Vaccination trains the immune system to respond to the infecting agent, creating a transition directly from $S$ to $R$.  As opposed to the previously discussed effects, the rate of vaccination typically depends little on the number of individuals in each compartment, and more on external factors like medical research and vaccination campaigns \cite{labtext}. 
 We therefore model the vaccination rate as a simple function of time. 
 \begin{subequations}
 \begin{align}
-\dv{S}{t} &= \lambda R - \beta\frac{SI}{N} - f(t)
-\\ \dv{I}{t} &= \beta\frac{SI}{N} - \gamma I 
-\\ \dv{R}{t} &= \gamma I - \lambda R + f(t)
+\dv{S}{t} &= \lambda R - \beta\frac{SI}{N} - f(t),
+\\ \dv{I}{t} &= \beta\frac{SI}{N} - \gamma I ,
+\\ \dv{R}{t} &= \gamma I - \lambda R + f(t).
 \end{align}
 \end{subequations}
 
 All these improvements, along with many others, can be combined to create a more realistic model for a given scenario.
  
-\textbf{The basic reproduction number}
+\textbf{The basic reproduction number:}
 All the improvements outlined above have analytical expressions for the equilibrium, which can be found by setting all three derivatives to zero. Particularly, $\dv*{I}{t} = 0$ gives the equilibrium $s^*$ for $S$. The number $R_0=N/s^*$ is then the basic reproduction number, and if it is larger than one, the disease will remain in the population. 
  
 %
@@ -205,7 +207,7 @@ Since every state of the system depends on the previous state, neither algorithm
 
 \subsection{The coupled ODE approach}
 
-The differential equations were solved using the Runge-Kutta 4 algorithm. This method is not symplectic, but has a global error $\order{h^4}$, where $h$ is the chosen step length. The algorithm is
+The differential equations were solved using the Runge-Kutta 4 algorithm. This method is not symplectic, but has a global error $\order{h^4}$, where $h$ is the chosen step length. The algorithm is \cite{ODElecture}
 %
 \begin{algorithmic}
 \For{$i=0:n-1$}
@@ -219,7 +221,7 @@ The differential equations were solved using the Runge-Kutta 4 algorithm. This m
 %
 When simulating a system of coupled differential equations, each line in calculated for every equation before moving to the next. 
 
-The Runge-Kutta 4 method for the coupled differential equations was implemented with the python class \texttt{ODESolver} written by H.P.Langtangen, and used in the course IN1900. More information on this class can be found in ref \cite{in1900}. 
+The Runge-Kutta 4 method for the coupled differential equations was implemented with the python class \texttt{ODESolver} written by H.P.Langtangen, and used in the course IN1900. More information on this class can be found in reference \cite{in1900}. 
 
 \subsection{The Monte Carlo approach}
 
@@ -243,24 +245,24 @@ At each time step, the Monte Carlo algorithm performs each transition with the c
 %
 \section{Results}
 
-The basic SIRS model was simulated for four populations, each starting at $[S,I,R]=[300,100,0]$, and with the parameters shown in table \ref{tab:a}. The Results are shown in figure \ref{fig:a}. 
-\begin{table}[h]
-	\centering
-	\caption{}
-	\label{tab:a}
+The basic SIRS model was simulated for four populations, A, B, C and D, each starting at $[S,I,R]=[300,100,0]$, and with the parameters shown below. The Results are shown in figure \ref{fig:a}. 
+\begin{center}
+	%\centering
+	%\caption{}
+	%\label{tab:a}
 	\begin{tabular}{ccccc}\hline
 	\bf Rate & \bf A & \bf B & \bf C & \bf D \\\hline
 	$\beta$ & 4 & 4 & 4 & 4 \\
 	$\gamma$ & 1 & 2 & 3 & 4 \\
 	$\lambda$ & 0.5 & 0.5 & 0.5 & 0.5 \\\hline
 	\end{tabular}
-\end{table}
+\end{center}
 
-Figure \ref{fig:C} shows the same calculation for population C, but with a different seed for the random number generator.
+%Figure \ref{fig:C} shows the same calculation for population C, but with a different seed for the random number generator.
 
 Figure \ref{fig:vit} shows the evolution of population B with an added birth rate and death rate of $\nu=\mu=0.1$, and no death from the disease. 
 
-In figure \ref{fig:c}, the size of population C was increased tenfold in order to reduce the effects of random fluctuations. Birth and death rates of $\mu=\nu=0.9$ were added to the model. In one case, the disease also had a death rate $\mu_I = 0.1$. 
+In figure \ref{fig:c}, the size of population C was increased tenfold in order to reduce the effects of random fluctuations. Birth and death rates of $\mu=\nu=0.9$ were introduced to the model. In \ref{fig:cgon}, the disease also had a death rate $\mu_I = 0.1$. 
 
 
 Figure \ref{fig:d} shows the effect of an oscillating transmission parameter given by \ref{eq:seasvar} on the population B for two different frequencies.
@@ -273,6 +275,47 @@ Figure \ref{fig:einc} shows instead an increasing vaccination rate given by the
 \begin{equation}\label{finc}
 f(t) = \begin{cases} t-20 &t>20,\\0&\mathrm{else}. \end{cases}
 \end{equation}
+
+Figure \ref{fig:seed} shows simulations starting at $[S,I,R] = [399,1,0]$ with $\beta=4$ and $\gamma=1$ as the only non-zero parameters, for three different seeds of the random number generator.
+
+
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=\linewidth]{Bd01e01_1.eps}
+	\small
+	\begin{tabular}{c l r}
+  &    Monte Carlo     &  ODE  \\\hline
+S &  228.0 $\pm$  40.0 &  210.0 \\
+I &   46.0 $\pm$  13.8 &   43.8 \\
+R &  151.9 $\pm$  28.7 &  146.2 \\\hline
+	\end{tabular}
+	\caption{Evolution of population B with added parameters $\nu=\mu=0.1$. The magenta curves show the total population, and the red lines indicate the mean and standard deviation of the Monte Carlo simulation after $t=20$.} 
+	\label{fig:vit}
+\end{figure}
+
+
+
+
+\begin{figure}
+	\centering
+	\begin{subfigure}{\linewidth}
+		\centering
+		\includegraphics[width=\linewidth]{a4b3c05e09d09_x10_1.eps}
+		\caption{Vital parameters $\mu=\nu=0.9$, thus $R_0=4/3.9\approx1.026$}
+		\label{fig:cstay}
+	\end{subfigure}
+	\begin{subfigure}{\linewidth}
+		\centering
+		\includegraphics[width=\linewidth]{a4b3c05e09d09dI01_x10_1.eps}
+		\caption{Vital parameters $\mu=\nu=0.9$ and $\mu_I=0$, thus $R_0=1$}
+		\label{fig:cgon}
+	\end{subfigure}
+	\caption{Evolution of the system for a population equivalent to population C but ten times as large, with basic reproduction numbers slightly larger and equal to 1.}
+	\label{fig:c}
+\end{figure}
+
+
 
 
 
@@ -331,53 +374,23 @@ R &    0.0 $\pm$   0.0 &    0.6 \\\hline
 	\caption{Population C, equilibrium reached at $t_\mathrm{eq}=20$.}
 	\label{fig:aD}
 \end{subfigure}
-	\caption{Evolution of the model for the four populations in table \ref{tab:a}. The graphs show the evolution before equilibration, and the tables show the equilibrium state. The values for the Monte Carlo are means over $t\in[t_\mathrm{eq},100]$.}
+	\caption{Evolution of the model for the four the populations described in the text. The graphs show the evolution before equilibration, and the tables show the equilibrium state. The values for the Monte Carlo are means over $t\in[t_\mathrm{eq},100]$.}
 	\label{fig:a} 
 \end{figure*}
 
 
-
+\begin{comment}
 \begin{figure}
 	\centering
 	\includegraphics[width=\linewidth]{a4b3c05_n1742748670.eps}
 	\caption{Evolution of the model for population C before equilibrium. The model is identical to the one shown in figure \ref{fig:aC}, but uses a different seed when generating random numbers.}
 	\label{fig:C}
 \end{figure}
+\end{comment}
 
 
 
-\begin{figure}
-	\centering
-	\includegraphics[width=\linewidth]{Bd01e01_1.eps}
-	\small
-	\begin{tabular}{c l r}
-  &    Monte Carlo     &  ODE  \\\hline
-S &  228.0 $\pm$  40.0 &  210.0 \\
-I &   46.0 $\pm$  13.8 &   43.8 \\
-R &  151.9 $\pm$  28.7 &  146.2 \\\hline
-	\end{tabular}
-	\caption{Evolution of population B with added parameters $\nu=\mu=0.1$. The magenta curves show the total population, and the red lines indicate the mean and standard deviation of the Monte Carlo simulation after $t=20$.} 
-	\label{fig:vit}
-\end{figure}
 
-
-\begin{figure*}
-	\centering
-	\begin{subfigure}{0.5\linewidth}
-		\centering
-		\includegraphics[width=\linewidth]{a4b3c05e09d09_x10_1.eps}
-		\caption{Vital parameters $\mu=\nu=0.9$, thus $R_0=4/3.9\approx1.026$}
-		\label{fig:cstay}
-	\end{subfigure}%
-	\begin{subfigure}{0.5\linewidth}
-		\centering
-		\includegraphics[width=\linewidth]{a4b3c05e09d09dI01_x10_1.eps}
-		\caption{Vital parameters $\mu=\nu=0.9$ and $\mu_I=0$, thus $R_0=1$}
-		\label{fig:cstay}
-	\end{subfigure}
-	\caption{Evolution of the system for a population equivalent to population C but ten times as large, with basic reproduction numbers slightly larger and equal to 1.}
-	\label{fig:c}
-\end{figure*}
 
 
 
@@ -419,7 +432,23 @@ R &  151.9 $\pm$  28.7 &  146.2 \\\hline
 	\label{fig:e}
 \end{figure*}
 
-
+\begin{figure*}
+	\centering
+	\begin{subfigure}{0.33\linewidth}
+		\centering
+		\includegraphics[width=\linewidth]{SIR_early_n1975647833.eps}
+	\end{subfigure}%
+	\begin{subfigure}{0.33\linewidth}
+		\centering
+		\includegraphics[width=\linewidth]{SIR_late_n457858786.eps}
+	\end{subfigure}%
+	\begin{subfigure}{0.33\linewidth}
+		\centering
+		\includegraphics[width=\linewidth]{SIR_none_n1815345841.eps}
+	\end{subfigure}%
+	\caption{SIR simulations with $[S,I,R] = [399,1,9]$ at $t=0$, and parameters $\beta = 4, \gamma = 2$, for three different seeds.}
+	\label{fig:seed}
+\end{figure*}
 
 
 	 
@@ -451,80 +480,83 @@ R & 36.55\% & 35.66\%  \\\hline
 \end{center}
 The large fluctuations in the total population will be discussed in section \ref{ssec:dif}. 
 
-For the model with vital dynamics, the basic reproduction number is found from equation \ref{eq:vit} to be 
+For the model with vital dynamics, the basic reproduction number is found from equation \ref{eq:cI} to be 
 \[
 R_0 = \frac{\beta}{\gamma + \mu + \mu_I}.
 \]
 The impact of this threshold value is seen  in figure \ref{fig:c}. Indeed, in this scenario the lethal disease was eradicated while the non-lethal one remained in the population. 
 
 
-Adding seasonal variation creates a varying equilibrium with the same period. As seem in figure \ref{fig:d}, the maximum transmission rate $\beta(t)$ corresponds to the maximum $I$ and $R$ and the minimum $S$. 
+Adding seasonal variation creates a varying equilibrium with the same period. As seen in figure \ref{fig:d}, the maximum transmission rate $\beta(t)$ corresponds to the maximum $I$ and $R$ and the minimum $S$. 
 For periods much longer than the system's equilibration time, the variations are close to sinusoidal; the change is slow enough that the compartments can equilibrate almost instantaneously. This situation is shown in figure \ref{fig:dlong}.
 For periods comparable to the equilibration time, as in figure \ref{fig:dshort}, the other rates also contribute to the shape of the oscillations. For instance, we see a slight delay between the maxima of $I$ and $R$, due to the recovery rate $\gamma$. 
 
 
 
-In a simple vaccination campaign like the one modeled in figure \ref{fig:ecamp}, where we assume a constant vaccination rate, induces a new equilibration of the system. Moving individuals from $S$ to $R$ also decreases the probability of infection $(aSI/N)\Delta t$, resulting in the equilibrium for $S$ stying the same, as observed.
+In a simple vaccination campaign like the one modeled in figure \ref{fig:ecamp}, where we assume a constant vaccination rate, a new equilibration of the system is induced. Moving individuals from $S$ to $R$ also decreases the probability of infection $(aSI/N)\Delta t$, and increases the transition from $R$ to $S$. The net result is the equilibrium for $S$ stying the same, as observed.
 If the number of infected drops low enough, fluctuations in the Monte Carlo simulation can cause it to become zero, eradicating the disease. 
 The ODE algorithm will always return to the original steady state once the campaign ends, because $I$ can approach zero asymptotically.   
 
-For the increasing vaccination rate modeled in figure \ref{fig:einc}, the entire population will eventually be vaccinated. While there are still infected, $S$ stays at equilibrium for the same reason as above, and the changes in $I$ and $R$ are symmetrical. Once the disease has been eradicated, the size of $S$ starts to decline linearly and symmetrically with $R$.
+For the increasing vaccination rate modeled in figure \ref{fig:einc}, the entire population will eventually be vaccinated. As long as there are still infected, $S$ stays at equilibrium for the same reason as above, and the changes in $I$ and $R$ are symmetrical. Once the disease has been eradicated, the size of $S$ starts to decline linearly and symmetrically with $R$.
        
 
 \subsection{Notable cases of deviation between the two approches}\label{ssec:dif}
 
-As seen in figures \ref{fig:C} \ref{fig:e} and \ref{fig:aC}, the two implementations differ greatly once the number of infected individuals approaches zero. 
+As seen in figures \ref{fig:e} and \ref{fig:aC}, the two implementations differ greatly once the number of infected individuals approaches zero. 
 If the $I$ is close to zero for a long  time compared to $\Delta t$, then the Monte Carlo algorithm is likely to reach zero due to random fluctuations, ending the pandemic.
- This also means the seed of the random number generator will have a large impact on the resulting behaviour, as illustrated by the difference in figures \ref{fig:C} and \ref{fig:aC}.
+ This also means the seed of the random number generator will have a large impact on the resulting behaviour. 
+ This can be seen most clearly in figure \ref{fig:seed}, where the system starts off with only one infected. Here, despite the exact same parameters being used, we see three different behaviours. The differences can largely be traced back to the random infection by or recovery of that individual
 
 
 The vital dynamics are extremely sensitive to the random fluctuations of the Monte Carlo algorithm. While the basic SIRS model has one steady state for a given set of parameters, there is no single steady state for the total population. If $\nu=\mu$, then the population is expected to remain constant, but has no preference for a particular value. 
 In keeping with this, figure \ref{fig:vit} shows roughly constant proportions of $S$, $I$ and $R$, with large fluctuations in the total population.  
 
 
-When the change is smaller than one individual per time step, the Monte Carlo algorithm changes faster than the ODEs. This is illustrated in fig \ref{fig:slope}.  
-The reason for this behaviour is that the Monte Carlo will make its minimum change of one individual before the ODE reach that change, effectively jumping ahead.
-
-
-
-
-For such small numbers of individuals, treating the system statistically is no longer justifiable, and the model breaks down. 
-One can however use the different possibilities as starting points for new simulations.   
-%the disease will rarely be completely extinguished in the ODE approach, as the number of infected can approach zero asymptotically. 
-%This can be remedied by choosing a criterion for setting the number of infected to zero, but the Monte Carlo approach includes this directly in the calculations.
-
-
-
 
   
 \subsection{Shortcomings of the model}
-%\note{retitle}
 
-This SIRS model assumes the recovery follows an exponential curve as seen in figure \ref{fig:recovery}, with expectation value $1/D_r$ where $D_r$ is the average recovery time. 
-Recovery from a disease is not a time independent stochastic process; it is the result of many complex processes within the body, as the immune system reacts to the disease. 
-In other   words, the probability of recovery depends on the time spent in the infected category.  
+In many of the cases described above, the fluctuations in the Monte Carlo algorithm had a large impact on the evolution of the disease once the number of infected individuals became small. 
+The ODE approach explicitly assumes populations large enough to be modeled by a continuous variable, so it cannot be used effectively in these situations. In general, statistical models are unreliable when the system is too small.
+The best we can achieve with the SIRS model would be to run the Monte Carlo simulation multiple times and thus estimate a probability of the different possible outcomes. 
+In practice, it might also be possible to identify such a small number of infected and make sure the disease doesn't spread.
 
 
-In many of the cases described above, the fluctuations in the Monte Carlo algorithm had a large impact on the evolution of the disease once the number of individuals in a compartment became small. 
-This illustrates a fundamental problem with this type of model: small groups cannot be described accurately by statistics. 
-The dependence on fluctuations reflects how such a situation can vary heavily based on individual behaviour. 
-Thus, the SIRS model and similar compartmental models can only predict the evolution of a system while each compartment is large. 
-%For instance, a single infected person going to a party is enough to 
+In this project we have only implemented a few simple improvements to the standard SIRS model, and have studied different parameters without considering their realism. We will point out briefly a few of the improvements we've left out.
+
+While we did include a seasonal variation in the transmission parameter $\beta$, it can also be reduced deliberately by for example quarantines. When fighting an epidemic, a good model for the impact of quarantines can be very useful.
+
+In the models presented here, the transition probabilities react instantaneously to changes in the compartments.%: the probabilities are directly proportional to the size of the compartment in question. This is equivalent to assuming the 
+Most visibly, the  number of recovered increases quickly from $t=0$. In reality, phenomena like disease recovery, immunity loss, birth and death do not have a constant probability. The immune reaction takes time, death usually follows prolonged sickness, and newborns don't give birth. 
+This time lag can be implemented into the model by taking into account the previous states of the model when calculating the transition probabilities.      
+
 
 %
 %
 %
+
 \section{Conclusion}
+We implemented the SIRS model for infectious diseases both as a random system with a Monte Carlo algorithm, and as coupled differential equations with the Runge-Kutta 4 algorithm. 
+The codes can be expanded to include more and different transitions, allowing the model to be tailored to a given situation. We added vital dynamics, sinusoidal seasonal variation of the transmission rate, and vaccination. We then studied the results of the two algorithms for various parameters, in whose selection we prioritized illustration of different behaviours over realism. 
+
+In most circumstances, the Monte Carlo algorithm follows the ODE solution. However, the random fluctuations sometimes cause it to eradicate the disease completely when the number of infected is close to zero. 
+This illustrates the limit of a statistical model for small populations.     
+ 
+Important improvements on the basic SIRS model which were not studied in the scope of this project include the influence of previous states of the system and the modeling of quarantines.
 
 
-
-\onecolumn
+%\onecolumn
 \begin{thebibliography}{9}
 
    
 
 \bibitem{labtext}
 Hjort-Jensen, Morten, (2020) \textit{Project 5, Disease Modeling}, \textsc{url: }\url{http://compphysics.github.io/ComputationalPhysics/doc/Projects/2020/Project5/DiseaseModeling/html/DiseaseModeling.html}. 
+
+\bibitem{ODElecture}
+Hjort-Jensen, Morten, (2020) \textit{Computational Physics Lectures: Ordinary differential equations}, \textsc{url: }\url{http://compphysics.github.io/ComputationalPhysics/doc/pub/ode/html/ode.html}.
+
+
 
 \bibitem{in1900}
 Langtangen, Hans Petter \& Sundnes, Joakim, (2017) \textit{App.E: Systems of differential equations}, \textsc{url: }\url{https://www.uio.no/studier/emner/matnat/ifi/IN1900/h17/ressurser/slides/ode_systems_short.pdf}
