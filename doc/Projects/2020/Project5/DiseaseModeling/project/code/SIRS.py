@@ -1,66 +1,97 @@
-"""Not part of the project. Made to test results of project 5 in FYS4150, 2020"""
-
 import matplotlib.pyplot as plt
 import numpy as np
 import ODESolver
 
-print("SIRS.py imported")
+if __name__!="__main__":
+    print("SIRS.py imported")
 
-def SIRSSolver(S_0,I_0,R_0, beta,b,c, dt,t_i,t_f, terminate=None):
-    '''On the time interval [t_i,t_f]: Solve the differential equations DS(x,t),
-    DI(x,t) and DR(x,t) in the SIRS model. Return S(t), I(t), R(t), t.'''
+class SIRS(object):
+    """Solve the SIRS model as a system of coupled ODEs using the RK4 algorithm"""
 
-    n = round((t_f - t_i)/dt + 1) # n must be an integer
-    t = np.linspace(t_i, t_f, n)
-    u0 = [S_0, I_0, R_0]
-    def f(u,t):
-        S, I, R = u
-        DS = - beta * S * I + c*R
-        DI = beta * S * I - b * I
-        DR = b * I - c*R
-        return [DS, DI, DR]
+    def __init__(self,S,I,R):
+        """Class initializer: constructs the state of the system at time t=0.
+        Arguments:  S : Initial number of susceptible
+                    I : Initial number of infected
+                    R : Initial number of recovered
+        """
+        self.state = [S,I,R]
 
-    # Using ODESolver:
-    ODE = ODESolver.RungeKutta4(f)
-    ODE.set_initial_condition(u0)
-    SIR, t = ODE.solve(t, terminate)
-    # Returns an array with [S(t), I(t), R(t)]arrays and an array with t.
+    def equations(self,state,t):
+        """Create the system of ODEs to be used by ODESolver
+        """
+        S,I,R = state
+        N = S+I+R
+        for transition in self.transitions:
+            exec(transition)
 
-    S, I, R = SIR[:,0], SIR[:,1], SIR[:,2]
+        DS = eval(self.DS_string)
+        DI = eval(self.DI_string)
+        DR = eval(self.DR_string)
+        return [DS,DI,DR]
 
-    return S, I, R, t
+    def Solve_ODE(self,final_time,dt,terminate=None):
+        """Use ODESolver's RungeKutta4 method to solve the system of equations
+        Arguments:  final_time : length of the simulation
+                    dt : time step
+                    terminate (optional) : condition upon which to break the solver loop
+        """
+        n = round(final_time/dt + 1) # n must be an integer
+        print(dt,n)
+        t = np.linspace(0,final_time,n)
+        ODE = ODESolver.RungeKutta4(self.equations)
+        ODE.set_initial_condition(self.state)
+        SIR,t = ODE.solve(t,terminate)
 
+        return(SIR,t)
 
-def visualizer(S,I,R, t, pop_unit=None, t_unit=None):
-    '''visualize S(t), I(t) and R(t) in one plot.'''
-    unit = [pop_unit, t_unit]
-    for i in [0,1]:
-        if unit[i] is None:
-            unit[i] = ''
-        else:
-            unit[i] = '(in {unit})'.format(unit=unit[i])
-    pop_unit, t_unit = unit[0], unit[1]
+    def Basic_SIRS(self, rStoI,rItoR,rRtoS):
+        """Define the equations of the basic SIRS model. This shoul be called
+        first after the constructor.
+        Arguments:  rStoI : transmission parameter
+                    rItoR : recovery parameter
+                    rRtoS : immunity loss parameter
+        """
+        self.a0 = rStoI
+        self.b = rItoR
+        self.c = rRtoS
+        self.time = 0
+        self.a = lambda t: self.a0 # Without vital dynamics
+        # ROOT-like and ugly. Find a better way to do this.
+        self.transitions = ["StoI = self.a(t)*S*I/N",
+                            "ItoR = self.b*I",
+                            "RtoS = self.c*R"]
+        # These will be evaluated in the method "equations"
+        self.DS_string = "RtoS - StoI"
+        self.DI_string = "StoI - ItoR"
+        self.DR_string = "ItoR - RtoS"
 
-    plt.plot(t,S,'xkcd:blue', t,I,'xkcd:vomit', t,R,'xkcd:hospital green')
-    plt.legend(['Susceptibles', 'Infected', 'Recovered'])
-    plt.xlabel('time %s' %t_unit)
-    plt.ylabel('people %s' %pop_unit)
-    # Not including plt.show() so the plots can be used in the main program.
+    def Vital_dynamics(self,rBirth,rDeath,rIDeath):
+        """Add the terms for vital dynamics to the equations
+        Arguments:  rBirth : birth rate
+                    rDeath : rate of death not related to the disease
+                    rIDeath : rate of death caused by the disease
+        """
+        self.e = rBirth
+        self.d = rDeath
+        self.dI = rIDeath
+        self.DS_string += "+ self.e*(S+I+R) - self.d*S"
+        self.DI_string += "- self.d*I - self.dI*I"
+        self.DR_string += "- self.d*R"
 
+    def Seasonal_variation(self,amplitude, omega):
+        """Change the parameter self.a to account for seasonal variation
+        Arguments:  amplitude : maximum deviation from the mean transmission rate
+                    omega : angular frequency of the oscillation
+        """
+        self.A = amplitude
+        self.w = omega
+        self.a = lambda t: self.A * np.cos(self.w*t) + self.a0
 
-if __name__ == '__main__':
-    # Setting Variables:
-    S_0 = 300 ; I_0 = 100 ; R_0 = 0
-    dt = 0.01 ; t_i = 0 ; t_f = 30
-    b = 1 ; beta = 0.01 ; c = 0.5
-
-    # Making plots:
-    plt.figure('Simulation of the spreading of a disease by the SIRS model')
-
-    plt.subplot()
-    S, I, R, t = SIRSSolver(S_0,I_0,R_0, beta,b,c, dt,t_i,t_f)
-    visualizer(S,I,R, t, t_unit = 'days')
-    plt.title("$\\beta=${beta}".format(beta=beta))
-
-    plt.subplots_adjust(left=0.12, bottom=0.10, right=0.99, top=0.95, hspace=0.40)
-    plt.show()
+    def Vaccination(self,rate):
+        """Add the term for vaccination to the equations
+        Argument:   rate(t)  : function of time describing the vaccination rate.
+        """
+        self.rVacc = lambda t: rate(t)
+        self.transitions.append("StoR = self.rVacc(t)*(S>0)")
+        self.DS_string += "- StoR"
+        self.DR_string += "+ StoR"
