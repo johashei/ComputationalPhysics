@@ -1,0 +1,15 @@
+Terminal > python main.py 4 1 0.5 300 100 0 40 0 0 0 1 0.6283 0
+SIRS.py imported
+0.01 4001
+seed = 1347522015
+A : 1
+w : 0.6283
+d : 0
+c : 0.5
+e : 0
+b : 1
+dI : 0
+a : 4
+0.002
+20000
+Input equilibration time : 

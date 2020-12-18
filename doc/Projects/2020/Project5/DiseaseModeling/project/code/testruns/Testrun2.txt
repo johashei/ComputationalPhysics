@@ -1,0 +1,23 @@
+Terminal > python main.py 4 1 0.5 300 100 0 100 1 0.01 1 0 0 200
+SIRS.py imported
+0.01 10001
+seed = 1734999518
+A : 0
+w : 0
+d : 1
+c : 0.5
+e : 1
+b : 1
+dI : 0.01
+a : 4
+0.0025
+40000
+main.py:74: UserWarning: Creating legend with loc="best" can be slow with large amounts of data.
+  fig.tight_layout()
+main.py:78: UserWarning: Creating legend with loc="best" can be slow with large amounts of data.
+  fig.show()
+Input equilibration time : 
+main.py:74: UserWarning: Creating legend with loc="best" can be slow with large amounts of data.
+  fig.tight_layout()
+main.py:87: UserWarning: Creating legend with loc="best" can be slow with large amounts of data.
+  plt.show()
