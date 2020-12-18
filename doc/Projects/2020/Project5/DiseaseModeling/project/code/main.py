@@ -26,8 +26,8 @@ f0 = float(sys.argv[13])
 
 # Solve with SIRS.py
 def f(t):
-    #return f0*(20<t<40) # Campaign
-    return f0*(t-20)*(20<t) # Increasing rate
+    return f0*(20<t<40) # Campaign with constant rate
+    #return f0*(t-20)*(20<t) # Increasing rate
 
 solver = SIRS.SIRS(S,I,R)
 solver.Basic_SIRS(a0,b,c)
@@ -62,8 +62,11 @@ def MakePlots():
     for i in range(3):
         ax.plot(t_ode,SIR_ode[:,i],c=colours[i],ls='-',label=labels[i])
         ax.step(t_mc,SIR_mc[:,i],c=colours[i],ls='-')
-    #ax.plot(t_ode,np.sum(SIR_ode,axis=1),'m-')
-    #ax.step(t_mc,np.sum(SIR_mc,axis=1),'m-')
+
+    if d+dI+e !=0: # If vital dynamics are included plot total population
+        ax.plot(t_ode,np.sum(SIR_ode,axis=1),'m-')
+        ax.step(t_mc,np.sum(SIR_mc,axis=1),'m-')
+
     ax.set_xlabel('time (arbitrary units)')
     ax.set_ylabel('population')
 
@@ -82,6 +85,7 @@ except:
     plt.close(fig)
     fig,ax = MakePlots()
     plt.show()
+    sys.exit(0)
 
 plt.close(fig)
 eqidx = np.where(t_mc>Equilibration_time)[0][0]

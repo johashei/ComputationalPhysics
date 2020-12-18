@@ -1,0 +1,19 @@
+Terminal > python main.py 3 1 0.5 300 100 0 50 0 0 0 0 0 0
+SIRS.py imported
+0.01 5001
+seed = 1
+A : 0
+w : 0
+d : 0
+c : 0.5
+e : 0
+b : 1
+dI : 0
+a : 3
+0.0025
+20000
+Input equilibration time : 12
+  &    Monte Carlo     &  ODE  \\
+S &  136.9 $\pm$  12.5 &  133.3 \\
+I &   88.9 $\pm$   9.9 &   88.9 \\
+R &  174.1 $\pm$   9.9 &  177.8 \\

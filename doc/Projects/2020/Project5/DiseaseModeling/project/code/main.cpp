@@ -41,6 +41,6 @@ int main(int argc, const char* argv[]){
 }
 
 double f(double t, double* pf0){
-  //return (*pf0)*(20<t && t<40); // Campaign with constant rate
-  return (*pf0)*(t-20)*(20<t); // Increasing rate
+  return (*pf0)*(20<t && t<40); // Campaign with constant rate
+  //return (*pf0)*(t-20)*(20<t); // Increasing rate
 }
